@@ -155,6 +155,61 @@ table.wt td:first-child{font-family:var(--mono);font-size:12px;font-weight:500}
 }
 .step.warn,.step.crit{padding-right:14px}
 .step.warn::after,.step.crit::after{content:none}
+
+/* ── DARK MODE ── */
+body.dark{
+  --bg:#1a1916;--surface:#242220;--border:#3a3834;--border-strong:#4a4845;
+  --text:#f0ede8;--text-muted:#a8a49e;--text-faint:#6b6860;
+  --blue:#5b9de8;--blue-bg:#1a2a3d;--blue-border:#2a4060;
+  --teal:#3ec99a;--teal-bg:#0d2a20;--teal-border:#1a4a35;
+  --amber:#f0b840;--amber-bg:#2a2010;--amber-border:#4a3a10;
+  --red:#e86060;--red-bg:#2a1515;--red-border:#4a2020;
+  --purple:#9b8ff0;--purple-bg:#1e1a35;--purple-border:#3a3060;
+  --coral:#e08060;--coral-bg:#2a1a10;--coral-border:#4a3020;
+  --green:#60c060;--green-bg:#102010;--green-border:#204020;
+}
+body.dark .step.warn{background:#2a2010;border-left-color:#4a3a10}
+body.dark .step.crit{background:#2a1515;border-left-color:#4a2020}
+body.dark .step.ok{background:#0d2a20;border-left-color:#1a4a35}
+body.dark .step.checked{background:#0d2a20;border-left-color:#1a4a35}
+body.dark details.tmpl{background:#1e1e1a}
+body.dark .tmpl-body{background:#1a1916}
+body.dark .info-box{background:#1e1e1a}
+
+/* ── HEADER BUTTONS (dark mode + search + print) ── */
+.header-actions{display:flex;align-items:center;gap:6px;position:absolute;top:20px;right:36px}
+.hdr-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border-strong);background:var(--bg);color:var(--text-muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:15px;transition:all .15s;font-family:var(--font)}
+.hdr-btn:hover{background:var(--surface);color:var(--text);border-color:var(--text-faint)}
+
+/* ── SEARCH OVERLAY ── */
+.search-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);z-index:500;align-items:flex-start;justify-content:center;padding-top:80px}
+.search-overlay.open{display:flex}
+.search-box{background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius-lg);width:100%;max-width:620px;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,.25)}
+.search-input-wrap{display:flex;align-items:center;gap:10px;padding:14px 16px;border-bottom:1px solid var(--border)}
+.search-input-wrap span{font-size:18px;color:var(--text-faint)}
+.search-input{border:none;outline:none;font-size:15px;font-family:var(--font);background:transparent;color:var(--text);flex:1}
+.search-input::placeholder{color:var(--text-faint)}
+.search-results{max-height:400px;overflow-y:auto}
+.search-result{padding:11px 16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.search-result:hover{background:var(--bg)}
+.search-result:last-child{border-bottom:none}
+.sr-tab{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text-faint);margin-bottom:3px}
+.sr-title{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:2px}
+.sr-desc{font-size:12px;color:var(--text-muted);line-height:1.4}
+.sr-highlight{background:var(--amber-bg);color:var(--amber);border-radius:2px;padding:0 2px}
+.search-empty{padding:24px 16px;text-align:center;color:var(--text-faint);font-size:13px}
+.search-hint{padding:8px 16px;font-size:11px;color:var(--text-faint);border-top:1px solid var(--border);background:var(--bg)}
+
+/* ── PRINT ── */
+@media print{
+  .tabs-wrap,.header-actions,.search-overlay{display:none!important}
+  .page{display:block!important;padding:0!important}
+  .page:not(.print-active){display:none!important}
+  details.tmpl{display:none}
+  body{background:#fff;font-size:12px}
+  .step{break-inside:avoid}
+  .phase{break-inside:avoid;margin-bottom:16px}
+}
 </style>
 </head>
 <body>
@@ -172,6 +227,15 @@ table.wt td:first-child{font-family:var(--mono);font-size:12px;font-weight:500}
       <button class="nav-btn" onclick="show('winkel',this)">🏪 Winkel Slimroken</button>
       <button class="nav-btn" onclick="show('sap',this)">💻 SAP Retouraanvraag</button>
     </nav>
+    <div style="display:flex;align-items:center;gap:8px;padding:10px 0 14px;position:relative">
+      <div style="flex:1;display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--border-strong);border-radius:20px;padding:7px 14px">
+        <span style="font-size:14px;color:var(--text-faint)">🔍</span>
+        <input id="search-input-inline" placeholder="Zoek een stap, term of actie..." oninput="doSearchInline(this.value)" onkeydown="searchKeyInline(event)" style="border:none;outline:none;font-size:13px;font-family:var(--font);background:transparent;color:var(--text);flex:1;min-width:0">
+      </div>
+      <button id="dark-btn" class="hdr-btn" onclick="toggleDark()" title="Donkere modus" style="width:36px;height:36px;font-size:16px;flex-shrink:0;border-radius:8px;border:1px solid var(--border-strong);background:var(--bg);cursor:pointer">🌙</button>
+      <button class="hdr-btn" onclick="printPage()" title="Afdrukken" style="width:36px;height:36px;font-size:16px;flex-shrink:0;border-radius:8px;border:1px solid var(--border-strong);background:var(--bg);cursor:pointer">🖨️</button>
+      <div id="search-results-inline" style="display:none;position:absolute;left:0;right:52px;top:100%;background:var(--surface);border:1px solid var(--border-strong);border-radius:0 0 12px 12px;z-index:200;max-height:360px;overflow-y:auto;box-shadow:0 8px 24px rgba(0,0,0,.15)"></div>
+    </div>
   </div>
 </div>
 <div class="container">
@@ -312,7 +376,7 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
 Het verdere proces wordt daar momenteel afgehandeld.
 De status wordt aangepast naar 'Afronden'.</div>
     </div>
-    <div class="success">✅ Retourticket succesvol afgehandeld</div>
+    <div class="step ok success-step" id="sfin0" onclick="toggleStep(this)" style="margin-top:16px;font-weight:600;font-size:13.5px"><div class="step-num" style="font-size:13px">✅</div><div class="step-body"><div class="step-title">✅ Retourticket succesvol afgehandeld</div></div></div>
   </div>
 </div>
 
@@ -410,7 +474,7 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
       <div class="status-card"><span class="slabel badge-red" style="border:none;padding:0">Defect</span><div class="sval">Locatie status →<br><strong>Defect/Incourant afgerond</strong></div></div>
     </div>
     <div class="step ok" style="margin-top:10px" id="s361" onclick="toggleStep(this)"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Producten verplaatst + update in ticket?</div><div class="step-desc">Zet <strong>Actie administratief</strong> op <strong>Afgerond</strong></div></div></div>
-    <div class="success">✅ Defect &amp; incourant correct gescheiden en volledig afgehandeld</div>
+    <div class="step ok success-step" id="sfin1" onclick="toggleStep(this)" style="margin-top:16px;font-weight:600;font-size:13.5px"><div class="step-num" style="font-size:13px">✅</div><div class="step-body"><div class="step-title">✅ Defect &amp; incourant correct gescheiden en volledig afgehandeld</div></div></div>
   </div>
 </div>
 
@@ -493,7 +557,7 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
     </div>
   </div>
   <div class="step ok" style="margin-top:10px" id="s362" onclick="toggleStep(this)"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Producten verplaatst + update in ticket?</div><div class="step-desc">Zet <strong>Actie administratief</strong> op <strong>Afgerond</strong></div></div></div>
-  <div class="success">✅ PostNL-retour geregistreerd en afgehandeld</div>
+  <div class="step ok success-step" id="sfin2" onclick="toggleStep(this)" style="margin-top:16px;font-weight:600;font-size:13.5px"><div class="step-num" style="font-size:13px">✅</div><div class="step-body"><div class="step-title">✅ PostNL-retour geregistreerd en afgehandeld</div></div></div>
 </div>
 
 <!-- ========== POWERMATIC ========== -->
@@ -574,7 +638,7 @@ Austria
 De track &amp; trace-code van de doos is:
 De status subtickets is gewijzigd naar "Opgestuurd Plattner".</div>
     </div>
-    <div class="success">✅ Powermatic klaar voor reparatieverzending</div>
+    <div class="step ok success-step" id="sfin3" onclick="toggleStep(this)" style="margin-top:16px;font-weight:600;font-size:13.5px"><div class="step-num" style="font-size:13px">✅</div><div class="step-body"><div class="step-title">✅ Powermatic klaar voor reparatieverzending</div></div></div>
   </div>
   <div class="divider"></div>
   <div class="sub-header">Plattner retour — gerepareerd apparaat terug</div>
@@ -599,7 +663,7 @@ Onderstaand in de subticket(s) treft u een overzicht van de uitgevoerde herstelw
 De track &amp; trace-code van de doos is:
 De status subtickets is gewijzigd naar "Versturen klant".</div>
   </div>
-  <div class="success">✅ Powermatic klaar voor levering aan klant</div>
+  <div class="step ok success-step" id="sfin4" onclick="toggleStep(this)" style="margin-top:16px;font-weight:600;font-size:13.5px"><div class="step-num" style="font-size:13px">✅</div><div class="step-body"><div class="step-title">✅ Powermatic klaar voor levering aan klant</div></div></div>
   <div class="divider"></div>
   <div class="sub-header">Leenapparaat — uitlenen <span style="font-size:12px;color:var(--text-faint);font-weight:400">(alleen op verzoek)</span></div>
   <div class="steps" style="margin-top:10px" id="s364" onclick="toggleStep(this)">
@@ -628,8 +692,8 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
 <!-- ========== AANSTEKERS ========== -->
 <div class="page" id="p-lighter">
   <div class="page-header">
-    <h2>🔥 Aanstekers (Ronson / Xikar / Zippo)</h2>
-    <p>Drie merkflows met elk een eigen garantie- en serviceproces. Voer altijd eerst de snelle check uit.</p>
+    <h2>🔥 Aanstekers (Ronson / Zippo)</h2>
+    <p>Twee merkflows met elk een eigen garantie- en serviceproces. Voer altijd eerst de snelle check uit.</p>
   </div>
   <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="tab-progress-label" id="lbl-lighter">0 stappen afgerond</div>
   <button class="reset-btn" onclick="resetPage()">↺ Reset</button></div>
@@ -654,13 +718,12 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
   </div>
   <div class="phase">
     <div class="phase-title">Fase 3 — Merkflow</div>
-    <div class="fork fork3">
+    <div class="fork">
       <div class="fork-card">
         <div class="fork-label badge-blue">Zippo — extern</div>
         <div class="fork-body" style="margin-top:8px">Levenslange garantie via <strong>Zippo zelf</strong><br><br>Update: <em>"Klant doorverwijzen naar Zippo garantieprocedure"</em><br><br>Klant regelt via officiële Zippo-website. Wij handelen niet intern af.<br><br>Actie administratief → Afgerond na bevestiging</div>
       </div>
-      <div class="fork-card">
-        <div class="fork-label badge-teal">Xikar — via ons</div>
+      
         <div class="fork-body" style="margin-top:8px">Levenslange garantie via <strong>ons</strong><br><br>1. Basischeck · resultaat noteren<br>2. Nog defect → verklaar in ticket<br>3. Stuur zelfde model nieuw op<br>4. Niet beschikbaar? → klant kiest alternatief<br>5. Volg flow Opnieuw versturen<br>6. Actie administratief → Afgerond</div>
       </div>
       <div class="fork-card">
@@ -668,7 +731,7 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
         <div class="fork-body" style="margin-top:8px"><strong>Kostenindicatie:</strong><br>Recent (&lt;4 jr): €15,-<br>Klassiek: €35–€75,-<br>Vóór 1970: €45–€85,-<br>Garantie onderdelen: 6 mnd<br><br>Mail prijsopgave → akkoord → naar Delft → terug → factuur → na betaling verzenden</div>
       </div>
     </div>
-    <div class="success">✅ Aansteker afgehandeld via juiste merkflow</div>
+    <div class="step ok success-step" id="sfin5" onclick="toggleStep(this)" style="margin-top:16px;font-weight:600;font-size:13.5px"><div class="step-num" style="font-size:13px">✅</div><div class="step-body"><div class="step-title">✅ Aansteker afgehandeld via juiste merkflow</div></div></div>
   </div>
 </div>
 
@@ -702,7 +765,7 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
       <div class="step" id="s282" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">Geef vervangend product mee · geretourneerd product in doos "Omruiling winkel"</div></div></div>
       <div class="step warn"><div class="step-num">!</div><div class="step-body"><div class="step-title">Elke vrijdag: verwerkingslijst uploaden naar Monday</div><div class="step-desc">Daarna doos naar magazijnafdeling</div></div></div>
     </div>
-    <div class="success">✅ Omruiling correct verwerkt en geregistreerd</div>
+    <div class="step ok success-step" id="sfin6" onclick="toggleStep(this)" style="margin-top:16px;font-weight:600;font-size:13.5px"><div class="step-num" style="font-size:13px">✅</div><div class="step-body"><div class="step-title">✅ Omruiling correct verwerkt en geregistreerd</div></div></div>
   </div>
 </div>
 
@@ -756,7 +819,7 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
       <div class="step" id="s345" onclick="toggleStep(this)"><div class="step-num">40</div><div class="step-body"><div class="step-title">Vraag Finance aan</div><div class="step-desc"><span class="tag">Credit + Voorraad</span> courant · <span class="tag">Credit + Zonder Voorraad</span> defect · <span class="tag">Credit Incourant</span> incourant</div></div></div>
       <div class="step ok" id="s350" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-1 / Kast-2 / Kast-3 · wachten op Finance</div></div></div>
     </div>
-    <div class="success">✅ Retouraanvraag aangemaakt en Finance aangevraagd</div>
+    <div class="step ok success-step" id="sfin7" onclick="toggleStep(this)" style="margin-top:16px;font-weight:600;font-size:13.5px"><div class="step-num" style="font-size:13px">✅</div><div class="step-body"><div class="step-title">✅ Retouraanvraag aangemaakt en Finance aangevraagd</div></div></div>
   </div>
 </div>
 
@@ -885,6 +948,228 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+// ── DARK MODE ──
+function toggleDark(){
+  document.body.classList.toggle('dark');
+  const btn = document.getElementById('dark-btn');
+  btn.textContent = document.body.classList.contains('dark') ? '☀️' : '🌙';
+  localStorage.setItem('wf-dark', document.body.classList.contains('dark') ? '1' : '0');
+}
+
+// ── SEARCH ──
+const TAB_NAMES = {
+  'p-std':'📦 Standaard retour',
+  'p-defect':'🔧 Defecte producten',
+  'p-postnl':'🚚 PostNL / DHL',
+  'p-power':'⚙️ Powermatic',
+  'p-lighter':'🔥 Aanstekers',
+  'p-winkel':'🏪 Winkel Slimroken',
+  'p-sap':'💻 SAP Retouraanvraag'
+};
+
+function toggleSearch(){
+  const o = document.getElementById('search-overlay');
+  const inp = document.getElementById('search-input');
+  o.classList.toggle('open');
+  if(o.classList.contains('open')){
+    inp.value='';
+    document.getElementById('search-results').innerHTML='<div class="search-empty">Begin met typen om te zoeken...</div>';
+    setTimeout(()=>inp.focus(),50);
+  }
+}
+
+function closeSearchOutside(e){
+  if(e.target === document.getElementById('search-overlay')) toggleSearch();
+}
+
+function highlight(text, query){
+  if(!query) return text;
+  const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+  return text.replace(re,'<span class="sr-highlight">$1</span>');
+}
+
+function doSearch(q){
+  const res = document.getElementById('search-results');
+  if(!q || q.length < 2){
+    res.innerHTML='<div class="search-empty">Begin met typen om te zoeken...</div>';
+    return;
+  }
+  const ql = q.toLowerCase();
+  const matches = [];
+  document.querySelectorAll('.page').forEach(page => {
+    const pid = page.id;
+    const tabName = TAB_NAMES[pid] || pid;
+    page.querySelectorAll('.step').forEach(step => {
+      const title = step.querySelector('.step-title');
+      const desc = step.querySelector('.step-desc');
+      const titleTxt = title ? title.innerText : '';
+      const descTxt = desc ? desc.innerText : '';
+      if(titleTxt.toLowerCase().includes(ql) || descTxt.toLowerCase().includes(ql)){
+        matches.push({pid, tabName, titleTxt, descTxt, step});
+      }
+    });
+  });
+  if(!matches.length){
+    res.innerHTML='<div class="search-empty">Geen resultaten gevonden voor "'+q+'"</div>';
+    return;
+  }
+  res.innerHTML = matches.slice(0,12).map((m,i) => `
+    <div class="search-result" onclick="gotoResult('${m.pid}', ${Array.from(document.querySelectorAll('.page')).indexOf(document.getElementById(m.pid))}, this)" data-pid="${m.pid}" data-idx="${i}">
+      <div class="sr-tab">${m.tabName}</div>
+      <div class="sr-title">${highlight(m.titleTxt, q)}</div>
+      ${m.descTxt ? '<div class="sr-desc">'+highlight(m.descTxt.substring(0,100)+(m.descTxt.length>100?'...':''), q)+'</div>' : ''}
+    </div>
+  `).join('');
+}
+
+function gotoResult(pid, tabIdx, el){
+  // Switch to correct tab
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(p=>p.classList.remove('active'));
+  navBtns.forEach(b=>b.classList.remove('active'));
+  const targetPage = document.getElementById(pid);
+  if(targetPage){
+    targetPage.classList.add('active');
+    // Find corresponding nav button
+    const btnIdx = Array.from(pages).indexOf(targetPage);
+    if(navBtns[btnIdx]) navBtns[btnIdx].classList.add('active');
+  }
+  toggleSearch();
+  // Scroll to step
+  const q = document.getElementById('search-input').value;
+  setTimeout(()=>{
+    const steps = targetPage.querySelectorAll('.step');
+    for(let s of steps){
+      const t = s.querySelector('.step-title');
+      if(t && t.innerText.toLowerCase().includes(q.toLowerCase())){
+        s.scrollIntoView({behavior:'smooth', block:'center'});
+        s.style.outline = '2px solid var(--teal)';
+        setTimeout(()=>s.style.outline='', 2000);
+        break;
+      }
+    }
+  }, 100);
+}
+
+function searchKey(e){
+  if(e.key === 'Escape') toggleSearch();
+  if(e.key === 'Enter'){
+    const first = document.querySelector('.search-result');
+    if(first) first.click();
+  }
+}
+
+
+// ── INLINE SEARCH ──
+function doSearchInline(q){
+  const res = document.getElementById('search-results-inline');
+  if(!q || q.length < 2){res.style.display='none';return;}
+  const ql = q.toLowerCase();
+  const matches = [];
+  document.querySelectorAll('.page').forEach(page => {
+    const pid = page.id;
+    const tabName = TAB_NAMES[pid] || pid;
+    page.querySelectorAll('.step').forEach(step => {
+      const title = step.querySelector('.step-title');
+      const desc = step.querySelector('.step-desc');
+      const titleTxt = title ? title.innerText : '';
+      const descTxt = desc ? desc.innerText : '';
+      if(titleTxt.toLowerCase().includes(ql) || descTxt.toLowerCase().includes(ql)){
+        matches.push({pid, tabName, titleTxt, descTxt, step});
+      }
+    });
+  });
+  if(!matches.length){
+    res.style.display='block';
+    res.innerHTML='<div class="search-empty" style="padding:16px;text-align:center;font-size:13px;color:var(--text-faint)">Geen resultaten voor "'+q+'"</div>';
+    return;
+  }
+  res.style.display='block';
+  res.innerHTML = matches.slice(0,10).map((m,i) => `
+    <div class="search-result" onclick="gotoResultInline('${m.pid}', '${m.titleTxt.replace(/'/g,"\'")}')">
+      <div class="sr-tab">${m.tabName}</div>
+      <div class="sr-title">${highlight(m.titleTxt, q)}</div>
+      ${m.descTxt ? '<div class="sr-desc">'+highlight(m.descTxt.substring(0,90)+(m.descTxt.length>90?'...':''), q)+'</div>' : ''}
+    </div>
+  `).join('');
+}
+
+function gotoResultInline(pid, titleTxt){
+  const navBtns = document.querySelectorAll('.nav-btn');
+  const pages = document.querySelectorAll('.page');
+  pages.forEach(p=>p.classList.remove('active'));
+  navBtns.forEach(b=>b.classList.remove('active'));
+  const targetPage = document.getElementById(pid);
+  if(targetPage){
+    targetPage.classList.add('active');
+    const btnIdx = Array.from(pages).indexOf(targetPage);
+    if(navBtns[btnIdx]) navBtns[btnIdx].classList.add('active');
+  }
+  // Clear search
+  document.getElementById('search-input-inline').value='';
+  document.getElementById('search-results-inline').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+  // Highlight matching step
+  setTimeout(()=>{
+    if(!targetPage) return;
+    const steps = targetPage.querySelectorAll('.step');
+    for(let s of steps){
+      const t = s.querySelector('.step-title');
+      if(t && t.innerText === titleTxt){
+        s.scrollIntoView({behavior:'smooth', block:'center'});
+        s.style.outline = '2px solid var(--teal)';
+        setTimeout(()=>s.style.outline='', 2000);
+        break;
+      }
+    }
+  }, 150);
+}
+
+function searchKeyInline(e){
+  if(e.key==='Escape'){
+    document.getElementById('search-input-inline').value='';
+    document.getElementById('search-results-inline').style.display='none';
+  }
+  if(e.key==='Enter'){
+    const first = document.querySelector('#search-results-inline .search-result');
+    if(first) first.click();
+  }
+}
+
+// Close inline results when clicking outside
+document.addEventListener('click', e=>{
+  const inp = document.getElementById('search-input-inline');
+  const res = document.getElementById('search-results-inline');
+  if(inp && res && !inp.contains(e.target) && !res.contains(e.target)){
+    res.style.display='none';
+  }
+});
+
+// ── PRINT ──
+function printPage(){
+  document.querySelectorAll('.page').forEach(p=>{
+    p.classList.toggle('print-active', p.classList.contains('active'));
+  });
+  window.print();
+}
+
+// ── INIT ──
+document.addEventListener('DOMContentLoaded',()=>{
+  if(localStorage.getItem('wf-dark')==='1'){
+    document.body.classList.add('dark');
+    const btn=document.getElementById('dark-btn');
+    if(btn) btn.textContent='☀️';
+  }
+  updateProgress();
+  // Keyboard shortcut for search
+  document.addEventListener('keydown', e=>{
+    if((e.metaKey||e.ctrlKey) && e.key==='k'){e.preventDefault();toggleSearch();}
+    if(e.key==='Escape') document.getElementById('search-overlay').classList.remove('open');
+  });
+});
+
 </script>
 </body>
 </html>
