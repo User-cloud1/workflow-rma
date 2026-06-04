@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Handleiding Sales / RMA — Nieuwe medewerkers</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f3ee;--surface:#fff;--border:#e6e3db;--border-strong:#ccc9bf;
+  --text:#1c1a17;--text-muted:#6b6860;--text-faint:#aaa89f;
+  --accent:#1a4a2e;--accent-light:#e8f2ec;--accent-border:#b3d4be;
+  --blue:#1a4a7a;--blue-light:#e8eef8;--blue-border:#b3c8e8;
+  --amber:#7a4e00;--amber-light:#fdf4e0;--amber-border:#e8d080;
+  --red:#7a2020;--red-light:#fdf0f0;--red-border:#e8b8b8;
+  --purple:#3a2a8a;--purple-light:#eeeef8;--purple-border:#b8b0e8;
+  --font:'DM Sans',sans-serif;--serif:'Lora',serif;--mono:'DM Mono',monospace;
+  --radius:10px;--radius-lg:14px;--radius-xl:20px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.7}
+
+/* ── STICKY NAV ── */
+.topnav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 40px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.04)}
+.topnav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none}
+.topnav-inner::-webkit-scrollbar{display:none}
+.topnav a{padding:14px 16px;font-size:12.5px;font-weight:500;color:var(--text-muted);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s}
+.topnav a:hover{color:var(--text)}
+.topnav a.active{color:var(--accent);border-bottom-color:var(--accent)}
+
+/* ── HERO ── */
+.hero{background:var(--accent);color:#fff;padding:52px 40px 48px;text-align:center}
+.hero-inner{max-width:700px;margin:0 auto}
+.hero-badge{display:inline-block;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:18px}
+.hero h1{font-family:var(--serif);font-size:34px;font-weight:600;line-height:1.25;margin-bottom:14px;letter-spacing:-.5px}
+.hero p{font-size:15px;opacity:.8;line-height:1.65;max-width:560px;margin:0 auto 24px}
+.hero-links{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.hero-link{padding:9px 18px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid rgba(255,255,255,.3);color:#fff;background:rgba(255,255,255,.12);text-decoration:none;transition:all .15s}
+.hero-link:hover{background:rgba(255,255,255,.22)}
+.hero-link.primary{background:#fff;color:var(--accent);border-color:#fff}
+.hero-link.primary:hover{background:#f0f8f4}
+
+/* ── LAYOUT ── */
+.main{max-width:900px;margin:0 auto;padding:40px 40px 80px}
+
+/* ── SECTION ── */
+.section{margin-bottom:52px;scroll-margin-top:60px}
+.section-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:24px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.section-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.si-green{background:var(--accent-light)}
+.si-blue{background:var(--blue-light)}
+.si-amber{background:var(--amber-light)}
+.si-purple{background:var(--purple-light)}
+.si-red{background:var(--red-light)}
+.section-header-text h2{font-family:var(--serif);font-size:22px;font-weight:600;letter-spacing:-.3px;margin-bottom:4px}
+.section-header-text p{font-size:13px;color:var(--text-muted)}
+
+/* ── INTRO TEXT ── */
+.intro{font-size:15px;color:var(--text-muted);line-height:1.75;margin-bottom:24px}
+.intro strong{color:var(--text)}
+
+/* ── INFO BLOCKS ── */
+.info-block{border-radius:var(--radius);padding:14px 18px;margin:16px 0;font-size:13.5px;line-height:1.65}
+.ib-why{background:var(--blue-light);border-left:3px solid var(--blue);border-radius:0 var(--radius) var(--radius) 0}
+.ib-why .ib-label{color:var(--blue);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.ib-tip{background:var(--accent-light);border-left:3px solid var(--accent);border-radius:0 var(--radius) var(--radius) 0}
+.ib-tip .ib-label{color:var(--accent);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.ib-warn{background:var(--amber-light);border-left:3px solid #d4a000;border-radius:0 var(--radius) var(--radius) 0}
+.ib-warn .ib-label{color:var(--amber);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.ib-crit{background:var(--red-light);border-left:3px solid #c03030;border-radius:0 var(--radius) var(--radius) 0}
+.ib-crit .ib-label{color:var(--red);font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.info-block p{color:var(--text-muted)}.info-block strong{color:var(--text)}
+
+/* ── PROCESS STEPS ── */
+.process{display:flex;flex-direction:column;gap:0;position:relative;margin:20px 0}
+.process::before{content:'';position:absolute;left:21px;top:22px;bottom:22px;width:1px;background:var(--border)}
+.pstep{display:flex;gap:16px;align-items:flex-start;position:relative;padding-bottom:20px}
+.pstep:last-child{padding-bottom:0}
+.pstep-num{width:44px;height:44px;border-radius:50%;background:var(--surface);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--text-muted);flex-shrink:0;z-index:1;font-family:var(--mono)}
+.pstep-num.done{background:var(--accent);border-color:var(--accent);color:#fff}
+.pstep-content{flex:1;padding-top:10px}
+.pstep-title{font-size:14.5px;font-weight:600;margin-bottom:4px}
+.pstep-desc{font-size:13px;color:var(--text-muted);line-height:1.6}
+.pstep-desc strong{color:var(--text);font-weight:600}
+.pstep-desc code{font-family:var(--mono);font-size:12px;background:var(--bg);padding:1px 5px;border-radius:4px;border:1px solid var(--border)}
+
+/* ── CONCEPT CARDS ── */
+.concept-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:16px 0}
+.concept-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:14px 16px}
+.cc-icon{font-size:22px;margin-bottom:8px}
+.cc-title{font-size:13.5px;font-weight:600;margin-bottom:5px}
+.cc-desc{font-size:12.5px;color:var(--text-muted);line-height:1.55}
+
+/* ── SCREEN MOCK ── */
+.screen-mock{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin:16px 0}
+.mock-titlebar{background:var(--bg);border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;gap:8px}
+.mock-titlebar .dots{display:flex;gap:5px}
+.mock-dot{width:10px;height:10px;border-radius:50%}
+.d-red{background:#f08080}
+.d-amber{background:#f0c060}
+.d-green{background:#80c880}
+.mock-title{font-size:11px;font-weight:600;color:var(--text-faint);letter-spacing:.3px;flex:1;text-align:center}
+.mock-body{padding:14px 16px;font-size:12.5px}
+
+/* ── MONDAY MOCK ── */
+.monday-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--border);font-size:12.5px}
+.monday-row:last-child{border-bottom:none}
+.monday-row .mr-name{flex:2;font-weight:500}
+.monday-row .mr-badge{padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;flex-shrink:0}
+.mr-binnen{background:#e8f4fc;color:#1a5a8a}
+.mr-behandeling{background:#fff4d0;color:#7a5000}
+.mr-ra{background:#f0eefe;color:#3a2a8a}
+.mr-wachten{background:#fdf0f0;color:#7a2020}
+.monday-header{background:var(--bg);padding:6px 10px;font-size:10.5px;font-weight:700;color:var(--text-faint);text-transform:uppercase;letter-spacing:.5px;display:flex;gap:10px;border-bottom:1px solid var(--border)}
+
+/* ── WINKELZICHT TABLE ── */
+.wz-table{width:100%;border-collapse:collapse;font-size:13px;margin:10px 0}
+.wz-table th{text-align:left;padding:8px 12px;background:var(--bg);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:1px solid var(--border)}
+.wz-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top}
+.wz-table td:first-child{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent)}
+.wz-table td:last-child{color:var(--text-muted);font-size:13px}
+
+/* ── LOCATION FLOW ── */
+.loc-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);font-size:12.5px;margin:12px 0}
+.loc{padding:4px 10px;border-radius:5px;font-weight:600;font-size:12px;font-family:var(--mono)}
+.loc-arr{color:var(--text-faint);font-size:14px}
+.l-green{background:var(--accent-light);color:var(--accent);border:1px solid var(--accent-border)}
+.l-amber{background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border)}
+.l-blue{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border)}
+.l-purple{background:var(--purple-light);color:var(--purple);border:1px solid var(--purple-border)}
+
+/* ── CATEGORY CARDS ── */
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.cat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;display:flex;gap:12px}
+.cat-icon{font-size:24px;flex-shrink:0}
+.cat-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.cat-desc{font-size:12.5px;color:var(--text-muted);line-height:1.55}
+.cat-tag{display:inline-block;font-size:10.5px;padding:2px 7px;border-radius:4px;margin-top:6px;font-weight:600}
+.ct-green{background:var(--accent-light);color:var(--accent)}
+.ct-amber{background:var(--amber-light);color:var(--amber)}
+.ct-blue{background:var(--blue-light);color:var(--blue)}
+.ct-red{background:var(--red-light);color:var(--red)}
+
+/* ── DIVIDER ── */
+.divider{height:1px;background:var(--border);margin:32px 0}
+
+/* ── HIGHLIGHT BOX ── */
+.highlight-box{background:var(--accent);color:#fff;border-radius:var(--radius-lg);padding:20px 24px;margin:20px 0}
+.highlight-box h3{font-family:var(--serif);font-size:17px;font-weight:600;margin-bottom:8px}
+.highlight-box p{font-size:13.5px;opacity:.85;line-height:1.65}
+
+/* ── QR STEPS ── */
+.qr-steps{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.qr-step{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:10px 12px;display:flex;gap:10px;align-items:flex-start;font-size:12.5px;color:var(--text-muted)}
+.qr-n{width:20px;height:20px;border-radius:50%;background:var(--bg);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;font-family:var(--mono);color:var(--text-muted);flex-shrink:0}
+
+/* ── SAP FIELD TABLE ── */
+.sap-table{width:100%;border-collapse:collapse;font-size:13px;margin:12px 0}
+.sap-table th{text-align:left;padding:8px 12px;background:var(--bg);font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-muted);border-bottom:1px solid var(--border)}
+.sap-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-muted)}
+.sap-table td:first-child{font-weight:600;color:var(--text);font-family:var(--mono);font-size:12px;width:160px}
+.sap-table tr:last-child td{border-bottom:none}
+
+/* ── MISC ── */
+.tag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:4px;border:1px solid var(--border);color:var(--text-muted);background:var(--bg);margin:1px 2px;font-family:var(--mono)}
+.sub-title{font-family:var(--serif);font-size:17px;font-weight:600;margin:24px 0 12px;letter-spacing:-.2px}
+.sub-title-sm{font-size:14.5px;font-weight:600;margin:20px 0 10px;color:var(--text)}
+
+@media(max-width:700px){
+  .main,.topnav{padding-left:20px;padding-right:20px}
+  .hero{padding:36px 20px 32px}
+  .concept-grid,.cat-grid,.qr-steps{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topnav">
+  <div class="topnav-inner">
+    <a href="#intro" class="active">Introductie</a>
+    <a href="#systemen">Systemen</a>
+    <a href="#retourtypen">Retourtypen</a>
+    <a href="#registreren">Registreren</a>
+    <a href="#qrlabel">QR-label</a>
+    <a href="#behandeling">In behandeling</a>
+    <a href="#scheiding">Scheiding</a>
+    <a href="#retouraanvraag">Retouraanvraag SAP</a>
+    <a href="#afronden">Afronden</a>
+    <a href="#powermatic">Powermatic</a>
+    <a href="#aanstekers">Aanstekers</a>
+    <a href="#winkel">Winkel</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Handleiding voor nieuwe medewerkers</div>
+    <h1>Sales / RMA<br>Retourverwerking</h1>
+    <p>Welkom bij de (After)Sales afdeling. In deze handleiding leer je stap voor stap hoe retourzendingen, retouraanvragen en creditnota's worden verwerkt — inclusief de achtergrond en het waarom.</p>
+    <div class="hero-links">
+      <a href="#intro" class="hero-link primary">Begin hier →</a>
+      <a href="https://user-cloud1.github.io/workflow-rma/workflow_sales_rma.html" class="hero-link" target="_blank">📋 Naar de checklist</a>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ═══ INTRODUCTIE ═══ -->
+<div class="section" id="intro">
+  <div class="section-header">
+    <div class="section-icon si-green">👋</div>
+    <div class="section-header-text">
+      <h2>Welkom bij (After)Sales</h2>
+      <p>Wat doet deze afdeling en hoe werkt het retourproces in grote lijnen?</p>
+    </div>
+  </div>
+
+  <p class="intro">De (After)Sales afdeling beheert alle retourzendingen van klanten en winkels. Dit omvat het ontvangen, registreren, beoordelen en administratief verwerken van producten die terugkomen. Elke retour volgt een vast proces zodat niets verloren gaat en de voorraad altijd klopt.</p>
+
+  <div class="info-block ib-why">
+    <div class="ib-label">💡 Waarom is dit belangrijk?</div>
+    <p>Een correct verwerkte retour zorgt ervoor dat de klant zijn creditnota krijgt, de voorraad klopt en Finance de juiste boekingen kan doen. Een fout in het begin van het proces zorgt voor problemen aan het einde — bij de klant én intern.</p>
+  </div>
+
+  <div class="highlight-box">
+    <h3>De gouden regel</h3>
+    <p>Zodra er voorraad terug het magazijn in moet, maak je altijd een retouraanvraag aan — ook als de klant al is gecompenseerd door een vertegenwoordiger. Geen uitzondering.</p>
+  </div>
+
+  <div class="sub-title">Hoe gebruik je deze handleiding?</div>
+  <p class="intro">Lees deze handleiding als voorbereiding. Je leert hier het <em>waarom</em> achter elk proces. Als je daarna in de praktijk aan de slag gaat, gebruik je de <strong>workflow checklist</strong> als geheugensteuntje per stap. Die twee documenten vullen elkaar aan.</p>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="cc-icon">📖</div>
+      <div class="cc-title">Deze handleiding</div>
+      <div class="cc-desc">Uitleg, context en achtergrond. Lees dit vóór je begint.</div>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">✅</div>
+      <div class="cc-title">Workflow checklist</div>
+      <div class="cc-desc">Stap voor stap afvinken tijdens het werk. Gebruik dit in de praktijk.</div>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🗂️</div>
+      <div class="cc-title">Monday</div>
+      <div class="cc-desc">Alle tickets en communicatie worden hier bijgehouden.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SYSTEMEN ═══ -->
+<div class="section" id="systemen">
+  <div class="section-header">
+    <div class="section-icon si-blue">💻</div>
+    <div class="section-header-text">
+      <h2>Systemen die je gebruikt</h2>
+      <p>Monday, SAP, Dymo en Jotform — wat doet elk systeem?</p>
+    </div>
+  </div>
+
+  <p class="intro">Je werkt dagelijks met vier systemen. Het is belangrijk dat je begrijpt wat elk systeem doet en hoe ze met elkaar samenhangen.</p>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="cc-icon">📋</div>
+      <div class="cc-title">Monday.com</div>
+      <div class="cc-desc">Ticketsysteem. Hier registreer je elke retour als ticket, houd je de status bij en communiceer je intern over de verwerking.</div>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">💼</div>
+      <div class="cc-title">SAP</div>
+      <div class="cc-desc">ERP-systeem. Hier maak je de officiële retouraanvraag aan, koppel je prijzen en vraag je credits aan bij Finance.</div>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🖨️</div>
+      <div class="cc-title">Dymo</div>
+      <div class="cc-desc">Labelprinter. Hiermee print je QR-labels die fysiek op dozen worden geplakt, zodat je altijd snel het juiste ticket kunt vinden.</div>
+    </div>
+  </div>
+
+  <div class="info-block ib-why">
+    <div class="ib-label">💡 Waarom Jotform?</div>
+    <p>Klanten of vertegenwoordigers melden een retour vooraf via een Jotform-formulier. Dit formulier maakt automatisch een ticket aan in Monday. Zo hebben wij al de klantgegevens en retourredenen voordat de doos binnenkomt. Veel werk is dan al gedaan.</p>
+  </div>
+
+  <div class="sub-title">Monday bord structuur</div>
+  <p class="intro" style="margin-bottom:12px">De meeste retourtickets vind je op het bord <strong>(AFTER)Sales → Retour Verwerking / PostNL / DHL</strong>. Dit bord is verdeeld in secties per categorie.</p>
+
+  <div class="screen-mock">
+    <div class="mock-titlebar"><div class="dots"><div class="mock-dot d-red"></div><div class="mock-dot d-amber"></div><div class="mock-dot d-green"></div></div><div class="mock-title">Monday.com — Retour Verwerking / PostNL / DHL</div></div>
+    <div class="mock-body">
+      <div class="monday-header"><span style="flex:2">Ticket naam</span><span style="flex:1">Status</span><span style="flex:1">Locatie</span></div>
+      <div class="monday-row"><span class="mr-name">UEGH – K12345 – DE SHOP NAAM</span><span class="mr-badge mr-binnen">Zending binnen</span><span style="color:var(--text-faint);font-size:11px">Kast-Geregistreerd</span></div>
+      <div class="monday-row"><span class="mr-name">ATH – K67890 – WINKEL NAAM</span><span class="mr-badge mr-behandeling">In behandeling</span><span style="color:var(--text-faint);font-size:11px">Tommy – Kantoor</span></div>
+      <div class="monday-row"><span class="mr-name">UEGH – K11111 – SHOP NAAM</span><span class="mr-badge mr-ra">Retouraanvraag</span><span style="color:var(--text-faint);font-size:11px">Kast-Retouraanvraag</span></div>
+      <div class="monday-row"><span class="mr-name">UEGB – K22222 – BELG SHOP</span><span class="mr-badge mr-wachten">Wachten Finance</span><span style="color:var(--text-faint);font-size:11px">Kast-2</span></div>
+    </div>
+  </div>
+
+  <div class="sub-title">Winkelzicht — het belangrijkste veld</div>
+  <p class="intro" style="margin-bottom:12px">Het veld <strong>Winkelzicht</strong> in Monday bepaalt bij welke klant en welk systeem de retour hoort. Gebruik altijd exact deze structuur:</p>
+
+  <div class="info-block ib-tip" style="margin-bottom:12px">
+    <div class="ib-label">📝 Structuur</div>
+    <p style="font-family:var(--mono);font-size:13px">[Afkorting] – [K-nummer] – [Winkelnaam]<br><span style="opacity:.7">Voorbeeld: UEGH – K12345 – DE SHOP NAAM</span></p>
+  </div>
+
+  <table class="wz-table">
+    <tr><th>Afkorting</th><th>Betekenis</th><th>SAP-omgeving</th></tr>
+    <tr><td>UEGH</td><td>UEG Holland</td><td>SAP UEG Holland — magazijn 02</td></tr>
+    <tr><td>UEGB</td><td>UEG Belgium</td><td>SAP UEG Belgium — magazijn 01</td></tr>
+    <tr><td>ATH</td><td>Alons 't Hart</td><td>SAP ATH — magazijn 01</td></tr>
+    <tr><td>PRIVATE INDIVIDUAL</td><td>Particuliere klant</td><td>Afhankelijk van aankoop</td></tr>
+  </table>
+
+  <div class="info-block ib-warn">
+    <div class="ib-label">⚠️ Veelgemaakte fout</div>
+    <p>Het K-nummer staat rechtsboven op de pakbon. Zonder K-nummer kun je geen retouraanvraag aanmaken in SAP. Controleer dit altijd als eerste.</p>
+  </div>
+</div>
+
+<!-- ═══ RETOURTYPEN ═══ -->
+<div class="section" id="retourtypen">
+  <div class="section-header">
+    <div class="section-icon si-amber">📦</div>
+    <div class="section-header-text">
+      <h2>Retourtypen</h2>
+      <p>Welke soorten retouren zijn er en hoe herken je ze?</p>
+    </div>
+  </div>
+
+  <p class="intro">Niet elke retour is hetzelfde. Het type retour bepaalt hoe je het verwerkt, welk Monday-bord je gebruikt en welke projectcode je in SAP invoert. Het herkennen van het type is dan ook de allereerste stap bij binnenkomst.</p>
+
+  <div class="cat-grid">
+    <div class="cat-card">
+      <div class="cat-icon">📦</div>
+      <div>
+        <div class="cat-title">Standaard retour (nieuwe goederen)</div>
+        <div class="cat-desc">Producten in nieuwstaat die de klant teruggestuurd heeft. Bijvoorbeeld verkeerd besteld of niet meer nodig. Dit is het meest voorkomende type.</div>
+        <span class="cat-tag ct-green">Courant</span>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">🔧</div>
+      <div>
+        <div class="cat-title">Defecte producten</div>
+        <div class="cat-desc">Producten die kapot, beschadigd of technisch defect zijn. Vereist een aparte projectcode in SAP en gaat naar het incourant magazijn.</div>
+        <span class="cat-tag ct-red">RMA-defect</span>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">🚚</div>
+      <div>
+        <div class="cat-title">PostNL / DHL retour</div>
+        <div class="cat-desc">Pakket is in de originele verzenddoos teruggestuurd. Op de doos zit een PostNL-label. Wordt op een apart bord verwerkt.</div>
+        <span class="cat-tag ct-blue">PostNL/DHL</span>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">⚙️</div>
+      <div>
+        <div class="cat-title">Powermatic</div>
+        <div class="cat-desc">Sigarettenstopapparaten die ter reparatie worden opgestuurd naar Plattner in Oostenrijk. Speciale labels (3x) en vaste verzenddag (vrijdag).</div>
+        <span class="cat-tag ct-amber">Reparatie</span>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">🔥</div>
+      <div>
+        <div class="cat-title">Aanstekers (Ronson / Zippo)</div>
+        <div class="cat-desc">Defecte aanstekers. Zippo loopt via de officiële Zippo garantieprocedure. Ronson via ons servicecentrum in Delft (betaald).</div>
+        <span class="cat-tag ct-amber">Merk afhankelijk</span>
+      </div>
+    </div>
+    <div class="cat-card">
+      <div class="cat-icon">🏪</div>
+      <div>
+        <div class="cat-title">Winkel Slimroken</div>
+        <div class="cat-desc">Klanten komen fysiek langs met een defect apparaat of willen een product omruilen. Verwerking via de winkellijst, elke vrijdag geüpload naar Monday.</div>
+        <span class="cat-tag ct-green">Winkel</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-title">Courant vs. Incourant vs. Defect</div>
+  <p class="intro" style="margin-bottom:12px">Deze drie begrippen kom je voortdurend tegen. Ze bepalen de projectcode in SAP en de fysieke bestemming van de producten.</p>
+
+  <div class="concept-grid">
+    <div class="concept-card" style="border-top:3px solid #0f7057">
+      <div class="cc-icon">✅</div>
+      <div class="cc-title">Courant</div>
+      <div class="cc-desc">Ongebruikt, compleet, in originele verpakking en verkoopbaar. Gaat terug naar de reguliere voorraad. Geen projectcode nodig.</div>
+    </div>
+    <div class="concept-card" style="border-top:3px solid #d4a000">
+      <div class="cc-icon">📅</div>
+      <div class="cc-title">Incourant</div>
+      <div class="cc-desc">Niet meer verkoopbaar door verlopen THT-datum of wettelijke redenen. Niet defect. Projectcode: RMA-incourant. Gaat naar incourant magazijn.</div>
+    </div>
+    <div class="concept-card" style="border-top:3px solid #c03030">
+      <div class="cc-icon">🔧</div>
+      <div class="cc-title">Defect</div>
+      <div class="cc-desc">Kapot, beschadigd of technisch niet werkend. Projectcode: RMA-defect. Gaat naar defect/incourant magazijn.</div>
+    </div>
+  </div>
+
+  <div class="info-block ib-crit">
+    <div class="ib-label">🚨 Kritieke regel</div>
+    <p><strong>Defect en incourant mogen NOOIT in dezelfde retouraanvraag.</strong> Dit zorgt voor administratieve fouten in de boekhouding. Maak altijd aparte lijsten en aparte retouraanvragen.</p>
+  </div>
+</div>
+
+<!-- ═══ REGISTREREN ═══ -->
+<div class="section" id="registreren">
+  <div class="section-header">
+    <div class="section-icon si-green">📝</div>
+    <div class="section-header-text">
+      <h2>Registreren</h2>
+      <p>Elke retour die binnenkomt moet direct worden geregistreerd in Monday.</p>
+    </div>
+  </div>
+
+  <p class="intro">De eerste stap bij elke retour is controleren of er al een Jotform-ticket bestaat. Dit bepaalt wat je moet doen.</p>
+
+  <div class="loc-flow">
+    <span style="font-size:12px;color:var(--text-faint)">Fysiek:</span>
+    <span class="loc l-blue">Inkomende retour</span><span class="loc-arr">→</span>
+    <span class="loc l-amber">Kast-Geregistreerd</span>
+  </div>
+
+  <div class="sub-title-sm">Stap 1 — Controleer op een bestaand ticket</div>
+  <p class="intro" style="margin-bottom:12px">Gebruik de informatie op de doos (pakbon, T&T, winkelnaam) om te zoeken in Monday. Ga naar <strong>(AFTER)Sales → Retour Verwerking / PostNL / DHL</strong>.</p>
+
+  <div class="info-block ib-tip">
+    <div class="ib-label">💡 Tip</div>
+    <p>Controleer ook bij andere secties zoals "Defecte goederen" — klanten vullen soms het verkeerde formulier in. Een bestaand ticket voorkomen aanmaken is altijd beter dan dubbele tickets.</p>
+  </div>
+
+  <div class="sub-title-sm">Stap 2a — Jotform aanwezig</div>
+  <p class="intro">Het ticket staat al in Monday, aangemaakt door de klant. Je hoeft het alleen te vinden, de status te wijzigen naar <strong>Zending binnen</strong> en het QR-label te printen en plakken.</p>
+
+  <div class="sub-title-sm">Stap 2b — Geen Jotform (zelf aanmaken)</div>
+  <p class="intro" style="margin-bottom:12px">Geen ticket gevonden? Dan maak je het zelf aan via <strong>Formulier</strong> op het bord. Vul alle velden in:</p>
+
+  <table class="sap-table">
+    <tr><th>Veld</th><th>Wat invullen</th></tr>
+    <tr><td>Winkelzicht</td><td>UEGH – K12345 – WINKELNAAM (zie structuur hierboven)</td></tr>
+    <tr><td>Type</td><td>Nieuwe producten / Defecte goederen / PostNL/DHL / Aanstekers</td></tr>
+    <tr><td>E-mail klant</td><td>Staat op de pakbon of in SAP</td></tr>
+    <tr><td>SAP Doc</td><td>Leveringsnummer — staat bovenaan de pakbon</td></tr>
+    <tr><td>T&T</td><td>Track & Trace code van de retourzending</td></tr>
+    <tr><td>Deadline Update</td><td>Stel in op +2 weken vanaf vandaag</td></tr>
+  </table>
+</div>
+
+<!-- ═══ QR-LABEL ═══ -->
+<div class="section" id="qrlabel">
+  <div class="section-header">
+    <div class="section-icon si-purple">🏷️</div>
+    <div class="section-header-text">
+      <h2>QR-label aanmaken</h2>
+      <p>Elk pakket krijgt een QR-label zodat je het ticket altijd direct kunt openen.</p>
+    </div>
+  </div>
+
+  <p class="intro">Het QR-label is de verbinding tussen de fysieke doos en het digitale ticket in Monday. Door de QR te scannen open je direct het juiste ticket — zonder zoeken. Dit spaart enorm veel tijd en voorkomt fouten.</p>
+
+  <div class="info-block ib-why">
+    <div class="ib-label">💡 Waarom een QR-label?</div>
+    <p>Een doos kan weken op een locatie staan. Zonder QR-label weet niemand meer welk ticket erbij hoort. Met het label scan je in seconden het juiste ticket, zie je de volledige geschiedenis en kun je direct de status bijwerken.</p>
+  </div>
+
+  <div class="qr-steps">
+    <div class="qr-step"><div class="qr-n">1</div><div>Open het programma <strong>Dymo</strong></div></div>
+    <div class="qr-step"><div class="qr-n">2</div><div>Open de <strong>QR-preset</strong></div></div>
+    <div class="qr-step"><div class="qr-n">3</div><div>Kopieer de <strong>naam van het Monday-ticket</strong> en vervang de tekst in de preset</div></div>
+    <div class="qr-step"><div class="qr-n">4</div><div>Kopieer de <strong>link naar het Monday-ticket</strong></div></div>
+    <div class="qr-step"><div class="qr-n">5</div><div>Rechtsklik op het QR-logo → <strong>Eigenschappen</strong> → vervang de webpaginalink</div></div>
+    <div class="qr-step"><div class="qr-n">6</div><div>Print het label · plak op <strong>gele sticky note</strong> · bevestig op doos</div></div>
+  </div>
+
+  <div class="info-block ib-crit">
+    <div class="ib-label">🚨 Test altijd vóór wegzetten!</div>
+    <p>Scan de QR met de werk-iPad voordat je de doos op de locatie zet. Komt de QR uit bij het juiste ticket? Dan is het goed. Werkt het niet? Controleer de link in de preset.</p>
+  </div>
+
+  <p class="intro" style="margin-top:16px">Na het plakken van het label voeg je de locatie toe in het Monday-ticket (<strong>Kast-Geregistreerd</strong>) en controleer je of alle informatie correct is ingevuld. De doos gaat nu naar de kast.</p>
+</div>
+
+<!-- ═══ IN BEHANDELING ═══ -->
+<div class="section" id="behandeling">
+  <div class="section-header">
+    <div class="section-icon si-blue">🔍</div>
+    <div class="section-header-text">
+      <h2>In behandeling nemen</h2>
+      <p>De doos pakken uit de kast, inhoud beoordelen en lijsten maken.</p>
+    </div>
+  </div>
+
+  <p class="intro">De kast <strong>Kast-Geregistreerd</strong> is de wachtrij. Hier staan dozen die geregistreerd zijn maar nog niet beoordeeld. Als je tijd hebt pak je een doos en ga je aan de slag.</p>
+
+  <div class="loc-flow">
+    <span class="loc l-amber">Kast-Geregistreerd</span><span class="loc-arr">→</span>
+    <span class="loc l-purple">Kast-Retouraanvraag</span>
+    <span style="font-size:12px;color:var(--text-faint);margin-left:4px">(of Hold &amp; Stuck)</span>
+  </div>
+
+  <div class="process">
+    <div class="pstep">
+      <div class="pstep-num done">1</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Scan QR → open ticket · status naar "In behandeling"</div>
+        <div class="pstep-desc">Zo weten collega's dat jij met deze retour bezig bent. Verander ook de locatie naar <strong>[jouw naam] + kantoor</strong>.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">2</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Open de doos en beoordeel de inhoud</div>
+        <div class="pstep-desc">Controleer of de inhoud klopt met wat er in het ticket staat. Vergelijk met de pakbon indien aanwezig.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">3</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Splits producten: Courant / Incourant / Defect</div>
+        <div class="pstep-desc">Dit is de kritieke stap. Zie het volgende hoofdstuk voor uitleg over de scheiding.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">4</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Maak lijsten in Excel en upload naar Monday</div>
+        <div class="pstep-desc">Gebruik de juiste Excel-template per type. Geef het bestand dezelfde naam als het Monday-ticket + datum. Upload in het tabblad <strong>Bestanden</strong>.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num">5</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Doos naar Kast-Retouraanvraag</div>
+        <div class="pstep-desc">Nu de inhoud beoordeeld en gedocumenteerd is, gaat de doos naar de volgende locatie. Update ook de locatie in het ticket.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-block ib-tip">
+    <div class="ib-label">💡 Druk moment?</div>
+    <p>Kun je de retouraanvraag niet direct maken? Zet de actie in Monday op <strong>"Retouraanvraag aanmaken"</strong> en plaats de doos op Kast-Retouraanvraag. Zo weet iedereen wat er nog moet gebeuren.</p>
+  </div>
+
+  <div class="info-block ib-warn">
+    <div class="ib-label">⚠️ Status "Hold"?</div>
+    <p>Soms kan een retour niet direct worden verwerkt — ontbrekende informatie, wachten op de klant, etc. Noteer de reden duidelijk in het ticket en verplaats de doos naar <strong>Hold &amp; Stuck</strong>. Update de locatie naar Hold-.</p>
+  </div>
+</div>
+
+<!-- ═══ SCHEIDING ═══ -->
+<div class="section" id="scheiding">
+  <div class="section-header">
+    <div class="section-icon si-red">⚠️</div>
+    <div class="section-header-text">
+      <h2>Verplichte productscheiding</h2>
+      <p>De belangrijkste stap in het hele proces — nooit overslaan.</p>
+    </div>
+  </div>
+
+  <p class="intro">Bij het openen van een doos moet je elk product direct categoriseren. De scheiding die je hier maakt bepaalt alles: de projectcode in SAP, het Finance-verzoek en de fysieke bestemming van de producten.</p>
+
+  <div class="info-block ib-crit">
+    <div class="ib-label">🚨 Nooit combineren!</div>
+    <p>Defect en incourant mogen nooit in dezelfde retouraanvraag. Als je beiden hebt, maak je twee aparte lijsten én twee aparte retouraanvragen in SAP.</p>
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card" style="border:1.5px solid #0f7057">
+      <div class="cc-icon">📦</div>
+      <div class="cc-title" style="color:#0f7057">Courant</div>
+      <div class="cc-desc"><strong>Wanneer:</strong> ongebruikt, originele verpakking, volledig compleet, verkoopbaar<br><br><strong>Lijst bevat:</strong> SKU · Artikelnaam · Aantal · THT · Reden: Nieuwstaat<br><br><strong>SAP:</strong> geen projectcode<br><strong>Finance:</strong> Credit + Voorraad</div>
+    </div>
+    <div class="concept-card" style="border:1.5px solid #d4a000">
+      <div class="cc-icon">📅</div>
+      <div class="cc-title" style="color:#7a4e00">Incourant</div>
+      <div class="cc-desc"><strong>Wanneer:</strong> niet defect maar THT verlopen of wettelijk niet verkoopbaar<br><br><strong>Lijst bevat:</strong> SKU · Artikelnaam · Aantal · THT · Reden: Incourant<br><br><strong>SAP:</strong> RMA-incourant<br><strong>Finance:</strong> Credit Incourant</div>
+    </div>
+    <div class="concept-card" style="border:1.5px solid #c03030">
+      <div class="cc-icon">🔧</div>
+      <div class="cc-title" style="color:#7a2020">Defect</div>
+      <div class="cc-desc"><strong>Wanneer:</strong> kapot, beschadigd, technisch defect, breuk bij levering<br><br><strong>Lijst bevat:</strong> SKU · Artikelnaam · Aantal · Reden defect · Serienummer · Aankoopbewijs<br><br><strong>SAP:</strong> RMA-defect<br><strong>Finance:</strong> Credit + Zonder Voorraad</div>
+    </div>
+  </div>
+
+  <div class="info-block ib-why">
+    <div class="ib-label">💡 Waarom is deze scheiding zo belangrijk?</div>
+    <p>Voor de boekhouding maakt het een groot verschil of iets defect of incourant is. Defecte producten worden afgeschreven anders dan incourante producten. Finance boekt ze naar verschillende rekeningen. Een fout hier zorgt voor verkeerde boekingen die achteraf moeilijk te corrigeren zijn.</p>
+  </div>
+</div>
+
+<!-- ═══ RETOURAANVRAAG SAP ═══ -->
+<div class="section" id="retouraanvraag">
+  <div class="section-header">
+    <div class="section-icon si-blue">💻</div>
+    <div class="section-header-text">
+      <h2>Retouraanvraag aanmaken in SAP</h2>
+      <p>De officiële administratieve verwerking in het ERP-systeem.</p>
+    </div>
+  </div>
+
+  <p class="intro">De retouraanvraag in SAP is het officiële document dat de basis vormt voor de creditnota aan de klant. Het is essentieel dat dit correct wordt ingevuld — met de juiste prijs, projectcode en magazijn.</p>
+
+  <div class="info-block ib-why">
+    <div class="ib-label">💡 Wat is een retouraanvraag?</div>
+    <p>Een retouraanvraag is een document in SAP waarmee je aangeeft dat producten terugkomen. Op basis van dit document maakt Finance de creditnota — de terugbetaling aan de klant. Zonder correcte retouraanvraag geen correcte credit.</p>
+  </div>
+
+  <div class="sub-title-sm">Open het juiste SAP-winkelzicht</div>
+  <p class="intro" style="margin-bottom:10px">Check in het Monday-ticket welk winkelzicht van toepassing is en open de bijbehorende SAP-omgeving.</p>
+
+  <table class="wz-table">
+    <tr><th>Monday winkelzicht</th><th>Open SAP omgeving</th><th>Magazijn</th></tr>
+    <tr><td>UEGH</td><td>SAP UEG Holland</td><td>02</td></tr>
+    <tr><td>UEGB</td><td>SAP UEG Belgium</td><td>01</td></tr>
+    <tr><td>ATH</td><td>SAP Alons 't Hart</td><td>01</td></tr>
+  </table>
+
+  <div class="sub-title-sm">Prijs matchen via orderreferentie</div>
+  <p class="intro" style="margin-bottom:12px">De retourprijs moet exact overeenkomen met wat de klant oorspronkelijk betaald heeft. Gebruik <strong>Drag &amp; Relate → Klantorderdetails</strong> om de originele order te vinden.</p>
+
+  <div class="info-block ib-tip">
+    <div class="ib-label">💡 Hoe werkt dit?</div>
+    <p>Sleep het klantnummer naar Klantorderdetails. Je ziet dan alle orders van deze klant. Zoek het artikel en open de order via de gouden pijl. Kopieer het kortingspercentage uit de artikelregel en gebruik hetzelfde in de retouraanvraag.</p>
+  </div>
+
+  <div class="info-block ib-warn">
+    <div class="ib-label">⚠️ Elk artikel heeft een prijsreferentie nodig</div>
+    <p>Als je 2 stuks van hetzelfde artikel retour hebt, moet de referentieorder ook 2 stuks bevatten. Gebruik anders 2 aparte referentieorders. Klanten betalen niet altijd dezelfde prijs — door PCP-niveau, extra korting of prijswijzigingen.</p>
+  </div>
+
+  <div class="sub-title-sm">Extra: defecte producten</div>
+  <p class="intro" style="margin-bottom:10px">Voor defecten geldt dat de referentieorder vóór de aankoopdatum van de particulier moet liggen, maximaal 6 maanden eerder.</p>
+
+  <div class="info-block ib-tip">
+    <div class="ib-label">Voorbeeld</div>
+    <p>Aankoopdatum particulier: 15-06-2025<br>Geldige referentieorder: 15-12-2024 tot 15-06-2025<br>Ongeldige referentieorder: vóór 15-12-2024 of ná 15-06-2025</p>
+  </div>
+
+  <div class="sub-title-sm">Alle velden in SAP</div>
+  <table class="sap-table">
+    <tr><th>Veld</th><th>Wat invullen</th></tr>
+    <tr><td>K-nummer</td><td>Klantnummer uit Monday-ticket / pakbon</td></tr>
+    <tr><td>Artikelen</td><td>Gebruik de aantallen uit de Excel-lijst in Monday → Bestanden</td></tr>
+    <tr><td>Prijs/korting</td><td>Overnemen uit originele klantorder</td></tr>
+    <tr><td>Projectcode</td><td>RMA-defect / RMA-incourant / leeg (courant)</td></tr>
+    <tr><td>Magazijn</td><td>UEGH → 02 / ATH of UEGB → 01</td></tr>
+    <tr><td>Belastingcode (BE)</td><td>Staat er 21V? Wijzig naar V21</td></tr>
+    <tr><td>Shop ID</td><td>Zie rechterzijbalk (niet zichtbaar? View → Door gebruiker gedefinieerde velden)</td></tr>
+    <tr><td>Owner</td><td>Jezelf</td></tr>
+    <tr><td>Restockkosten</td><td>Klantfout? 12,5% bij veld "Korting". UEG-fout? Niets invullen.</td></tr>
+  </table>
+
+  <div class="sub-title-sm">Afronden en Finance aanvragen</div>
+  <div class="process">
+    <div class="pstep">
+      <div class="pstep-num done">1</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Klik op "Actualiseren" → kopieer het RA-nummer</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">2</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Plak het RA-nummer in het Monday-ticket</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">3</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Vraag Finance aan via de juiste optie</div>
+        <div class="pstep-desc"><span class="tag">Credit + Voorraad</span> courant · <span class="tag">Credit + Zonder Voorraad</span> defect · <span class="tag">Credit Incourant</span> incourant</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num">4</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Doos → Kast-1 / Kast-2 / Kast-3 · wachten op Finance</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ AFRONDEN ═══ -->
+<div class="section" id="afronden">
+  <div class="section-header">
+    <div class="section-icon si-green">✅</div>
+    <div class="section-header-text">
+      <h2>Afronden na creditering</h2>
+      <p>Finance heeft de credit verwerkt — wat doe je nu met de fysieke producten?</p>
+    </div>
+  </div>
+
+  <p class="intro">Zodra Finance de credit heeft verwerkt, verschijnt het ticket op het juiste bord. Je past de locatiestatus aan en verplaatst de producten fysiek naar de juiste bestemming.</p>
+
+  <div class="info-block ib-crit">
+    <div class="ib-label">🚨 Wacht altijd op Finance!</div>
+    <p>Pas nadat Finance gecrediteerd heeft mag je de locatiestatus aanpassen en de producten verplaatsen. Niet eerder.</p>
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <div class="cc-icon">📦</div>
+      <div class="cc-title">Courant afgerond</div>
+      <div class="cc-desc">Producten gaan terug naar de reguliere voorraad in het magazijn.</div>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🗃️</div>
+      <div class="cc-title">Defect/Incourant afgerond</div>
+      <div class="cc-desc">Producten gaan naar het defect/incourant magazijn. Wekelijkse afvoer.</div>
+    </div>
+    <div class="concept-card">
+      <div class="cc-icon">🔄</div>
+      <div class="cc-title">Opnieuw versturen</div>
+      <div class="cc-desc">Pakket gaat terug naar de klant. Label printen, afleveren bij magazijn, T&T via Teams ontvangen en in ticket plaatsen.</div>
+    </div>
+  </div>
+
+  <div class="info-block ib-tip">
+    <div class="ib-label">💡 Laatste stap niet vergeten</div>
+    <p>Nadat je de producten hebt verplaatst en een update in het ticket hebt geplaatst, zet je de <strong>Actie administratief</strong> op <strong>Afgerond</strong>. Anders blijft het ticket open staan.</p>
+  </div>
+</div>
+
+<!-- ═══ POWERMATIC ═══ -->
+<div class="section" id="powermatic">
+  <div class="section-header">
+    <div class="section-icon si-amber">⚙️</div>
+    <div class="section-header-text">
+      <h2>Powermatic</h2>
+      <p>Sigarettenstopapparaten voor reparatie naar Plattner in Oostenrijk.</p>
+    </div>
+  </div>
+
+  <p class="intro">De Powermatic is een speciaal apparaat dat niet intern gerepareerd wordt. Defecte apparaten worden verzameld en wekelijks opgestuurd naar <strong>KP Plattner GmbH</strong> in Innsbruck, Oostenrijk. Na reparatie komen ze terug en worden ze doorgestuurd naar de klant.</p>
+
+  <div class="info-block ib-why">
+    <div class="ib-label">💡 Waarom 3 labels?</div>
+    <p>Een Powermatic krijgt altijd drie QR-labels: één onder het apparaat (bij het serienummer), één bovenop het apparaat en één op de doos. De label onder het apparaat is de back-up — mochten de andere twee verloren gaan tijdens verzending naar Plattner, is er altijd nog één label beschikbaar om het ticket te vinden.</p>
+  </div>
+
+  <div class="process">
+    <div class="pstep">
+      <div class="pstep-num done">1</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Registratie & update in ticket (in het Engels)</div>
+        <div class="pstep-desc">Vermeld: klantnaam/bedrijf · Powermatic type · Seal intact/broken · serienummer · defectomschrijving. Dit moet in het Engels omdat Plattner dit leest.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">2</div>
+      <div class="pstep-content">
+        <div class="pstep-title">3 labels printen via Dymo</div>
+        <div class="pstep-desc">Label 1 (alleen QR) → onder het apparaat naast serienummer · Label 2 (compleet) → sticky note bovenop apparaat · Label 3 (compleet) → sticky note bovenop doos.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">3</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Apparaat in vak "verzending" van de Powermatic-stelling</div>
+        <div class="pstep-desc">Apparaten worden verzameld tot de verzenddag.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">4</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Verzenddag = altijd vrijdag</div>
+        <div class="pstep-desc">Verpak alle apparaten samen in een grote doos. Let op het maximumgewicht. Vraag het magazijn om verzendlabels voor Plattner.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num">5</div>
+      <div class="pstep-content">
+        <div class="pstep-title">T&T via Teams → in alle bijbehorende tickets</div>
+        <div class="pstep-desc">Het magazijn stuurt de T&T na aanmelding van de zending. Plak dit in alle tickets van de verzonden Powermatics.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="sub-title">Plattner retour — gerepareerd terug</div>
+  <p class="intro">Als de apparaten terugkomen van Plattner staan ze in het vak "Plattner Retour". Scan de QR, controleer het serienummer, schrijf een update en stuur het apparaat door naar de klant.</p>
+
+  <div class="divider"></div>
+
+  <div class="sub-title">Leenapparaat</div>
+  <p class="intro">Klanten die wachten op reparatie van hun eigen apparaat kunnen tijdelijk een leenapparaat krijgen. Dit wordt alleen gedaan op verzoek. Het leenapparaat heeft ook een eigen Monday-ticket dat wordt bijgehouden. Bij terugkomst controleer je de inhoud — ontbreken onderdelen, dan wordt €45,- in rekening gebracht.</p>
+</div>
+
+<!-- ═══ AANSTEKERS ═══ -->
+<div class="section" id="aanstekers">
+  <div class="section-header">
+    <div class="section-icon si-amber">🔥</div>
+    <div class="section-header-text">
+      <h2>Aanstekers (Ronson / Zippo)</h2>
+      <p>Twee merken, twee totaal verschillende processen.</p>
+    </div>
+  </div>
+
+  <p class="intro">Aanstekers worden altijd vooraf aangemeld via Jotform. Bij binnenkomst doe je eerst altijd een snelle basischeck — veel problemen zijn simpel op te lossen.</p>
+
+  <div class="sub-title-sm">Stap 1 — Altijd eerst: snelle basischeck</div>
+  <div class="process">
+    <div class="pstep">
+      <div class="pstep-num done">1</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Check of de aansteker brandstof heeft</div>
+        <div class="pstep-desc">Gas of benzine bijvullen indien nodig. Wacht daarna 1 minuut — een net gevulde aansteker is koud en werkt niet direct goed.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">2</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Stel de vlamhoogte correct af</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">3</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Controleer op vuil/stof in het brandgat en maak schoon</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num">4</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Test opnieuw</div>
+        <div class="pstep-desc">Werkt hij nu? → Update ticket: "Getest, werkt na basischeck" → Afronden. Werkt hij niet? → Ga door naar de merkflow.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-block ib-why">
+    <div class="ib-label">💡 Waarom deze check eerst?</div>
+    <p>Een groot deel van de "defecte" aanstekers werkt gewoon niet door gebrek aan brandstof of een verstopt brandgat. Door dit eerst te controleren, bespaar je veel tijd en onnodig opgestuurd werk.</p>
+  </div>
+
+  <div class="sub-title-sm">Merkflow — Zippo</div>
+  <div class="info-block ib-tip">
+    <div class="ib-label">Zippo — levenslange garantie via Zippo zelf</div>
+    <p>Wij handelen Zippo-garanties niet intern af. De klant wordt doorverwezen naar de officiële Zippo garantieprocedure via de Zippo website. Noteer dit in het ticket en zet de actie op wachten.</p>
+  </div>
+
+  <div class="sub-title-sm">Merkflow — Ronson</div>
+  <div class="info-block ib-tip">
+    <div class="ib-label">Ronson — betaalde service via Delft</div>
+    <p>Ronson-aanstekers gaan naar ons servicecentrum in Delft voor revisie. Dit is een betaalde service. Stuur eerst een prijsopgave per mail naar de klant en wacht op schriftelijk akkoord voordat je de aansteker opstuurt.</p>
+  </div>
+  <table class="wz-table">
+    <tr><th>Type</th><th>Kostenindicatie</th></tr>
+    <tr><td>Recent (&lt;4 jaar)</td><td>€15,-</td></tr>
+    <tr><td>Klassiek</td><td>€35,- tot €75,-</td></tr>
+    <tr><td>Klassiek vóór 1970</td><td>€45,- tot €85,-</td></tr>
+    <tr><td>Niet te repareren</td><td>€9,50 + verzendkosten</td></tr>
+    <tr><td>Garantie op onderdelen</td><td>6 maanden</td></tr>
+  </table>
+</div>
+
+<!-- ═══ WINKEL ═══ -->
+<div class="section" id="winkel">
+  <div class="section-header">
+    <div class="section-icon si-green">🏪</div>
+    <div class="section-header-text">
+      <h2>Winkel Slimroken</h2>
+      <p>Klanten die fysiek langskomen met een defect of omruilverzoek.</p>
+    </div>
+  </div>
+
+  <p class="intro">In de winkel Slimroken komen klanten langs met twee soorten verzoeken: een defect apparaat of een product dat ze willen omruilen. Voor beide situaties gelden vaste procedures.</p>
+
+  <div class="sub-title-sm">Defect apparaat</div>
+  <div class="process">
+    <div class="pstep">
+      <div class="pstep-num done">1</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Controleer het defect</div>
+        <div class="pstep-desc">Beoordeel of het opgegeven defect overeenkomt met de daadwerkelijke toestand van het apparaat.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">2</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Controleer het garantiebewijs</div>
+        <div class="pstep-desc">Vraag het garantiekaartje. Valt de aankoopdatum binnen de garantieperiode?</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num done">3</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Omruilen (indien binnen garantie)</div>
+        <div class="pstep-desc">1-op-1 omruilen voor nieuw exemplaar. Exact model niet beschikbaar? Dan een gelijkwaardig of opvolgend model.</div>
+      </div>
+    </div>
+    <div class="pstep">
+      <div class="pstep-num">4</div>
+      <div class="pstep-content">
+        <div class="pstep-title">Registreer in defectenlijst · defect apparaat in incourante kast</div>
+        <div class="pstep-desc">De incourante kast wordt 1× per week geleegd.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sub-title-sm">Omruiling</div>
+  <div class="info-block ib-crit">
+    <div class="ib-label">🚨 Alleen ongeopend</div>
+    <p>Omruiling is alleen mogelijk als de verpakking volledig ongeopend en onbeschadigd is. Geopend of gebruikt = geen omruiling, geen uitzondering.</p>
+  </div>
+  <p class="intro" style="margin-top:12px">Na omruiling noteer je alles in de winkellijst onder categorie "Omruiling". Het geretourneerde product gaat in de doos "Omruiling winkel" (winkelkast, direct buiten de winkel). <strong>Elke vrijdag</strong> upload je de verwerkingslijst naar Monday en breng je de doos naar het magazijn.</p>
+</div>
+
+<!-- ═══ FOOTER ═══ -->
+<div class="divider"></div>
+<div style="text-align:center;padding:20px 0 10px">
+  <p style="font-size:13px;color:var(--text-faint);margin-bottom:12px">Klaar met lezen? Gebruik de checklist in de praktijk.</p>
+  <a href="https://user-cloud1.github.io/workflow-rma/workflow_sales_rma.html" style="display:inline-block;background:var(--accent);color:#fff;padding:10px 22px;border-radius:20px;font-size:13.5px;font-weight:600;text-decoration:none">📋 Open de workflow checklist →</a>
+</div>
+
+</div><!-- end main -->
+
+<script>
+// Active nav highlight on scroll
+const sections = document.querySelectorAll('.section');
+const navLinks = document.querySelectorAll('.topnav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if(window.scrollY >= s.offsetTop - 80) current = s.id;
+  });
+  navLinks.forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+</script>
+</body>
+</html>
