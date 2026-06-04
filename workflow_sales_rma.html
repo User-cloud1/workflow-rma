@@ -83,9 +83,82 @@ table.wt td:first-child{font-family:var(--mono);font-size:12px;font-weight:500}
 .copy-btn:hover{background:var(--text);color:#fff;border-color:var(--text)}
 .copy-btn.copied{background:var(--teal-bg);color:var(--teal);border-color:var(--teal-border)}
 @media(max-width:700px){.container{padding:20px 16px 40px}.header{padding:20px 16px 16px}.fork,.fork3,.status-grid{grid-template-columns:1fr}.qr-grid{grid-template-columns:1fr}}
+
+/* ===== INTERACTIVE ENHANCEMENTS ===== */
+/* Checkable steps */
+.step{cursor:pointer;transition:all .2s ease;position:relative}
+.step.warn,.step.crit{cursor:default}
+.step:hover{transform:translateX(3px);border-color:var(--border-strong)}
+.step.checked{background:var(--teal-bg);border-color:var(--teal-border)}
+.step.checked .step-title{color:var(--teal);text-decoration:line-through;text-decoration-color:var(--teal-border)}
+.step.checked .step-desc{color:var(--text-faint)}
+.step.checked .step-num{background:var(--teal);color:#fff;border-color:var(--teal)}
+.step-num{transition:all .2s}
+/* Checkmark animation */
+@keyframes checkPop{0%{transform:scale(0.5)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+.step.checked .step-num::after{content:'✓';font-size:11px}
+.step.checked .step-num{animation:checkPop .25s ease}
+/* Warn and crit steps also checkable */
+.step.warn.checked{background:#f0fbf4;border-left-color:var(--teal-border)}
+.step.crit.checked{background:#f0fbf4;border-left-color:var(--teal-border)}
+.step.ok.checked{background:#d4f0e4}
+
+/* Progress bar per tab */
+.tab-progress{height:5px;background:var(--border);border-radius:0 0 4px 4px;margin:-1px 0 20px;overflow:hidden;position:relative}
+.tab-progress-fill{height:100%;background:linear-gradient(90deg,#0f7057,#1d9e75);border-radius:4px;transition:width .4s cubic-bezier(.4,0,.2,1);width:0%}
+.tab-progress-label{font-size:11px;color:var(--text-faint);text-align:right;margin-bottom:4px;transition:color .3s}
+.tab-progress-label.done{color:var(--teal);font-weight:600}
+
+/* Phase completion badge */
+.phase-done-badge{display:none;font-size:11px;font-weight:600;color:var(--teal);background:var(--teal-bg);border:1px solid var(--teal-border);padding:2px 8px;border-radius:10px;margin-left:8px}
+.phase-complete .phase-done-badge{display:inline-block}
+.phase-complete .phase-title{display:flex;align-items:center;gap:4px}
+
+/* Confetti canvas */
+#confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+
+/* Tab badge showing progress */
+.nav-btn .badge-count{display:inline-block;font-size:10px;background:rgba(255,255,255,.2);border-radius:8px;padding:0 5px;margin-left:4px;font-weight:700}
+.nav-btn:not(.active) .badge-count{background:var(--teal-bg);color:var(--teal)}
+
+/* Reset button */
+.reset-btn{font-size:11px;color:var(--text-faint);background:none;border:1px solid var(--border);border-radius:4px;padding:2px 8px;cursor:pointer;font-family:var(--font);transition:all .15s;margin-left:8px}
+.reset-btn:hover{color:var(--red);border-color:var(--red-border)}
+
+/* Smooth tab transitions */
+.page{animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* Template expand/collapse */
+.tmpl-body{max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;padding:0 14px}
+.tmpl.expanded .tmpl-body{max-height:600px;padding:12px 14px}
+.tmpl-bar{cursor:pointer}
+.tmpl-bar:hover{background:var(--border)}
+.tmpl-toggle{font-size:11px;color:var(--text-faint);transition:transform .2s}
+.tmpl.expanded .tmpl-toggle{transform:rotate(180deg)}
+
+/* Checkable step indicator */
+.step[onclick]{padding-right: 36px}
+.step[onclick]::after{
+  content: '☐';
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+  color: var(--border-strong);
+  transition: all .2s;
+}
+.step.checked::after{
+  content: '☑';
+  color: var(--teal);
+}
+.step.warn,.step.crit{padding-right:14px}
+.step.warn::after,.step.crit::after{content:none}
 </style>
 </head>
 <body>
+<canvas id="confetti-canvas"></canvas>
 <div class="header">
   <div class="header-inner">
     <h1>Workflow Sales / RMA</h1>
@@ -109,6 +182,10 @@ table.wt td:first-child{font-family:var(--mono);font-size:12px;font-weight:500}
     <h2>📦 Standaard retour (nieuwe goederen)</h2>
     <p>Algemeen retourproces voor courant, incourant en defecte goederen.</p>
   </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="tab-progress-label" id="lbl-std">0 stappen afgerond</div>
+  <button class="reset-btn" onclick="resetPage()">↺ Reset</button></div>
+  <div class="tab-progress"><div class="tab-progress-fill" id="prog-std"></div></div>
+
   <div class="phase">
     <div class="phase-title">Locatieoverzicht</div>
     <div class="loc-flow">
@@ -120,9 +197,9 @@ table.wt td:first-child{font-family:var(--mono);font-size:12px;font-weight:500}
   </div>
   <div class="phase">
     <div class="phase-title">Fase 1 — Binnenkomst &amp; ticketcheck</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Retour komt binnen</div><div class="step-desc">Plaats de doos in <strong>Inkomende retour</strong>. Herken het type: Standaard / PostNL / Powermatic / Aanstekers / Defect.</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Controleer of er al een Monday-ticket bestaat</div><div class="step-desc">Gebruik pakbon, doos, T&amp;T of meegeleverd papierwerk. Ga naar: <strong>(AFTER)Sales → Retour Verwerking / PostNL</strong></div></div></div>
+    <div class="steps" id="s0" onclick="toggleStep(this)">
+      <div class="step" id="s1" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Retour komt binnen</div><div class="step-desc">Plaats de doos in <strong>Inkomende retour</strong>. Herken het type: Standaard / PostNL / Powermatic / Aanstekers / Defect.</div></div></div>
+      <div class="step" id="s6" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Controleer of er al een Monday-ticket bestaat</div><div class="step-desc">Gebruik pakbon, doos, T&amp;T of meegeleverd papierwerk. Ga naar: <strong>(AFTER)Sales → Retour Verwerking / PostNL</strong></div></div></div>
     </div>
     <div class="fork" style="margin-top:10px">
       <div class="fork-card"><div class="fork-label badge-teal">✓ Ticket gevonden</div><div class="fork-body">Open de bestaande ticket → ga verder bij Fase 2</div></div>
@@ -142,10 +219,10 @@ table.wt td:first-child{font-family:var(--mono);font-size:12px;font-weight:500}
       </table>
       Voorbeeld: <code>UEGH – K12345 – DE SHOP NAAM</code> — K-nummer staat rechtsboven op de pakbon.
     </div>
-    <div class="steps" style="margin-top:10px">
-      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Type instellen</div><div class="step-desc">Kies: <strong>Nieuwe producten</strong> / Defecte goederen / PostNL/DHL / Aanstekers</div></div></div>
-      <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Overige velden invullen</div><div class="step-desc">E-mail klant · SAP Doc (leveringsnummer) · T&amp;T · Deadline Update = <strong>+2 weken</strong></div></div></div>
-      <div class="step"><div class="step-num">5</div><div class="step-body"><div class="step-title">Status → Zending binnen</div></div></div>
+    <div class="steps" style="margin-top:10px" id="s354" onclick="toggleStep(this)">
+      <div class="step" id="s11" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">Type instellen</div><div class="step-desc">Kies: <strong>Nieuwe producten</strong> / Defecte goederen / PostNL/DHL / Aanstekers</div></div></div>
+      <div class="step" id="s16" onclick="toggleStep(this)"><div class="step-num">4</div><div class="step-body"><div class="step-title">Overige velden invullen</div><div class="step-desc">E-mail klant · SAP Doc (leveringsnummer) · T&amp;T · Deadline Update = <strong>+2 weken</strong></div></div></div>
+      <div class="step" id="s21" onclick="toggleStep(this)"><div class="step-num">5</div><div class="step-body"><div class="step-title">Status → Zending binnen</div></div></div>
     </div>
   </div>
   <div class="phase">
@@ -156,19 +233,19 @@ table.wt td:first-child{font-family:var(--mono);font-size:12px;font-weight:500}
       <div class="qr-item"><div class="qr-n">3</div><div>Kopieer ticketlink → rechtsklik QR → Eigenschappen → vervang link</div></div>
       <div class="qr-item"><div class="qr-n">4</div><div>Print · plak op gele sticky note · zichtbaar op doos · <strong>test met iPad!</strong></div></div>
     </div>
-    <div class="step ok" style="margin-top:6px"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Geregistreerd · locatie bijwerken in ticket</div></div></div>
+    <div class="step ok" style="margin-top:6px" id="s355" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Geregistreerd · locatie bijwerken in ticket</div></div></div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — update ticket bij registratie</span><button class="copy-btn" onclick="cp('s1',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — update ticket bij registratie</span><button class="copy-btn" onclick="cp('s1',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="s1">De retourzending is ontvangen.
 Het pakket is geregistreerd, maar moet nog worden gecontroleerd.</div>
     </div>
   </div>
   <div class="phase">
     <div class="phase-title">Fase 4 — In behandeling nemen</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Pak doos uit Kast-Geregistreerd</div><div class="step-desc">Scan QR → open ticket · Status → <strong>In behandeling</strong> · Locatie → [naam] + kantoor</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sorteer inhoud &amp; maak lijsten</div><div class="step-desc">Splits: <span class="tag">Courant</span> <span class="tag">Incourant</span> <span class="tag">Defect</span> — aparte Excel-lijsten per type · upload in tabblad <strong>Bestanden</strong></div></div></div>
-      <div class="step ok"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Retouraanvraag · locatie bijwerken in ticket</div></div></div>
+    <div class="steps" id="s28" onclick="toggleStep(this)">
+      <div class="step" id="s29" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Pak doos uit Kast-Geregistreerd</div><div class="step-desc">Scan QR → open ticket · Status → <strong>In behandeling</strong> · Locatie → [naam] + kantoor</div></div></div>
+      <div class="step" id="s34" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Sorteer inhoud &amp; maak lijsten</div><div class="step-desc">Splits: <span class="tag">Courant</span> <span class="tag">Incourant</span> <span class="tag">Defect</span> — aparte Excel-lijsten per type · upload in tabblad <strong>Bestanden</strong></div></div></div>
+      <div class="step ok" id="s39" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Retouraanvraag · locatie bijwerken in ticket</div></div></div>
     </div>
     <div class="fork" style="margin-top:10px">
       <div class="fork-card"><div class="fork-label badge-teal">Rustig moment</div><div class="fork-body">→ Direct door naar SAP Retouraanvraag</div></div>
@@ -176,7 +253,7 @@ Het pakket is geregistreerd, maar moet nog worden gecontroleerd.</div>
     </div>
     <div class="step warn" style="margin-top:8px"><div class="step-num">!</div><div class="step-body"><div class="step-title">Status "Hold"?</div><div class="step-desc">Noteer reden · verwerk inhoud normaal · doos naar <strong>Hold &amp; Stuck</strong> · locatie bijwerken naar Hold-</div></div></div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — retour ontvangen, inhoud gecontroleerd</span><button class="copy-btn" onclick="cp('s2',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — retour ontvangen, inhoud gecontroleerd</span><button class="copy-btn" onclick="cp('s2',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="s2">Retour ontvangen.
 De retourzending is ontvangen.
 De inhoud van de retourzending is gecontroleerd.
@@ -188,7 +265,7 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
 (foto van artikelen)</div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — afwijking geconstateerd</span><button class="copy-btn" onclick="cp('s3',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — afwijking geconstateerd</span><button class="copy-btn" onclick="cp('s3',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="s3">Retour is gecontroleerd – Afwijking geconstateerd.
 De retourzending is ontvangen, maar er zijn enkele afwijkingen geconstateerd (defect of incompleet):
 • 1x [SKU], [Artikelnaam] – Defect: [Reden van defect]
@@ -198,7 +275,7 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
 (foto van artikelen)</div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — onvoldoende informatie</span><button class="copy-btn" onclick="cp('s4',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — onvoldoende informatie</span><button class="copy-btn" onclick="cp('s4',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="s4">Retour ontvangen – onvoldoende informatie.
 Er is geen/weinig bruikbare informatie te halen uit deze retour.
 Geretourneerde (nieuwstaat / defecten / incouranten) producten:
@@ -213,7 +290,7 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
   </div>
   <div class="phase">
     <div class="phase-title">Fase 5 — Na retouraanvraag (wachten op Finance)</div>
-    <div class="step ok"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-1 / Kast-2 / Kast-3 · locatie bijwerken in ticket · wachten op Finance</div></div></div>
+    <div class="step ok" id="s47" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-1 / Kast-2 / Kast-3 · locatie bijwerken in ticket · wachten op Finance</div></div></div>
   </div>
   <div class="phase">
     <div class="phase-title">Fase 6 — Afronden na creditering Finance</div>
@@ -228,9 +305,9 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
       <div class="fork-card"><div class="fork-label badge-teal">B – Terug naar magazijn</div><div class="fork-body">Print label <em>"Terug naar magazijn + Winkelzicht + RA-nummer"</em> · afleveren bij magazijn</div></div>
       <div class="fork-card"><div class="fork-label badge-amber">C – Incourant magazijn</div><div class="fork-body">Producten in incourante kast · wordt op vaste momenten geleegd</div></div>
     </div>
-    <div class="step ok" style="margin-top:10px"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Producten verplaatst + update in ticket?</div><div class="step-desc">Zet <strong>Actie administratief</strong> op <strong>Afgerond</strong></div></div></div>
+    <div class="step ok" style="margin-top:10px" id="s358" onclick="toggleStep(this)"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Producten verplaatst + update in ticket?</div><div class="step-desc">Zet <strong>Actie administratief</strong> op <strong>Afgerond</strong></div></div></div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — pakket afgeleverd bij magazijn</span><button class="copy-btn" onclick="cp('s5',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — pakket afgeleverd bij magazijn</span><button class="copy-btn" onclick="cp('s5',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="s5">Het pakket is afgeleverd bij de magazijnafdeling.
 Het verdere proces wordt daar momenteel afgehandeld.
 De status wordt aangepast naar 'Afronden'.</div>
@@ -245,6 +322,10 @@ De status wordt aangepast naar 'Afronden'.</div>
     <h2>🔧 Defecte producten</h2>
     <p>Verwerking van defecte apparaten en producten. Let op de verplichte scheiding Defect / Incourant / Courant.</p>
   </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="tab-progress-label" id="lbl-defect">0 stappen afgerond</div>
+  <button class="reset-btn" onclick="resetPage()">↺ Reset</button></div>
+  <div class="tab-progress"><div class="tab-progress-fill" id="prog-defect"></div></div>
+
   <div class="phase">
     <div class="phase-title">Locatieoverzicht</div>
     <div class="loc-flow">
@@ -256,8 +337,8 @@ De status wordt aangepast naar 'Afronden'.</div>
   </div>
   <div class="phase">
     <div class="phase-title">Fase 1 — Binnenkomst &amp; registratie</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Product komt binnen via winkel, logistiek of Jotform</div><div class="step-desc">Plaats in <strong>Inkomende retour</strong> · controleer ticket via: (AFTER)Sales → Retourverwerking / PostNL / DHL → 🔧 Defecte Goederen</div></div></div>
+    <div class="steps" id="s58" onclick="toggleStep(this)">
+      <div class="step" id="s59" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Product komt binnen via winkel, logistiek of Jotform</div><div class="step-desc">Plaats in <strong>Inkomende retour</strong> · controleer ticket via: (AFTER)Sales → Retourverwerking / PostNL / DHL → 🔧 Defecte Goederen</div></div></div>
     </div>
     <div class="fork" style="margin-top:10px">
       <div class="fork-card"><div class="fork-label badge-teal">Ticket gevonden</div><div class="fork-body">Open ticket → ga door naar fase 2</div></div>
@@ -266,17 +347,17 @@ De status wordt aangepast naar 'Afronden'.</div>
   </div>
   <div class="phase">
     <div class="phase-title">Fase 2 — Ticket vastzetten + QR</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Update toevoegen</div><div class="step-desc">Vermeld reden defect · voeg foto's toe · zet ticket <strong>bovenaan vast</strong></div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">QR-label printen (Dymo) · plak op sticky note en doos · test met iPad</div></div></div>
-      <div class="step ok"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Geregistreerd · locatie bijwerken in ticket</div></div></div>
+    <div class="steps" id="s64" onclick="toggleStep(this)">
+      <div class="step" id="s65" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Update toevoegen</div><div class="step-desc">Vermeld reden defect · voeg foto's toe · zet ticket <strong>bovenaan vast</strong></div></div></div>
+      <div class="step" id="s70" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">QR-label printen (Dymo) · plak op sticky note en doos · test met iPad</div></div></div>
+      <div class="step ok" id="s74" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Geregistreerd · locatie bijwerken in ticket</div></div></div>
     </div>
   </div>
   <div class="phase">
     <div class="phase-title">Fase 3 — In behandeling</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Pak doos uit Kast-Geregistreerd</div><div class="step-desc">Scan QR → open ticket · Status → <strong>In behandeling</strong> · Locatie → [naam] + kantoor</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Controleer inhoud &amp; beoordeel product</div><div class="step-desc">Vergelijk opgegeven defect met daadwerkelijke toestand</div></div></div>
+    <div class="steps" id="s78" onclick="toggleStep(this)">
+      <div class="step" id="s79" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Pak doos uit Kast-Geregistreerd</div><div class="step-desc">Scan QR → open ticket · Status → <strong>In behandeling</strong> · Locatie → [naam] + kantoor</div></div></div>
+      <div class="step" id="s84" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Controleer inhoud &amp; beoordeel product</div><div class="step-desc">Vergelijk opgegeven defect met daadwerkelijke toestand</div></div></div>
     </div>
   </div>
   <div class="phase">
@@ -297,7 +378,7 @@ De status wordt aangepast naar 'Afronden'.</div>
       Upload lijsten <em>afzonderlijk</em> in tab <strong>Bestanden</strong> · bestandsnaam = ticketnaam + datum
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — retour ontvangen, inhoud gecontroleerd</span><button class="copy-btn" onclick="cp('d1',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — retour ontvangen, inhoud gecontroleerd</span><button class="copy-btn" onclick="cp('d1',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="d1">Retour ontvangen.
 De retourzending is ontvangen.
 De inhoud van de retourzending is gecontroleerd.
@@ -309,7 +390,7 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
 (foto van artikelen)</div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — afwijking geconstateerd</span><button class="copy-btn" onclick="cp('d2',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — afwijking geconstateerd</span><button class="copy-btn" onclick="cp('d2',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="d2">Retour is gecontroleerd – Afwijking geconstateerd.
 De retourzending is ontvangen, maar er zijn enkele afwijkingen geconstateerd (defect of incompleet):
 • 1x [SKU], [Artikelnaam] – Defect: [Reden van defect]
@@ -318,17 +399,17 @@ Er is dus sprake van één of meerdere afwijkingen in deze retourzending.
 De digitale lijst is te downloaden via het tabblad 'Bestanden'.
 (foto van artikelen)</div>
     </div>
-    <div class="step ok" style="margin-top:8px"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Retouraanvraag · Status → Retouraanvraag maken</div></div></div>
+    <div class="step ok" style="margin-top:8px" id="s360" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Retouraanvraag · Status → Retouraanvraag maken</div></div></div>
   </div>
   <div class="phase">
     <div class="phase-title">Fase 6 — Na retouraanvraag &amp; afronden</div>
-    <div class="step ok"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-1 / Kast-2 / Kast-3 · wachten op Finance</div></div></div>
+    <div class="step ok" id="s95" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-1 / Kast-2 / Kast-3 · wachten op Finance</div></div></div>
     <div class="status-grid" style="margin-top:10px">
       <div class="status-card"><span class="slabel badge-teal" style="border:none;padding:0">Courant</span><div class="sval">Locatie status →<br><strong>Courant afgerond</strong></div></div>
       <div class="status-card"><span class="slabel badge-amber" style="border:none;padding:0">Incourant</span><div class="sval">Locatie status →<br><strong>Defect/Incourant afgerond</strong></div></div>
       <div class="status-card"><span class="slabel badge-red" style="border:none;padding:0">Defect</span><div class="sval">Locatie status →<br><strong>Defect/Incourant afgerond</strong></div></div>
     </div>
-    <div class="step ok" style="margin-top:10px"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Producten verplaatst + update in ticket?</div><div class="step-desc">Zet <strong>Actie administratief</strong> op <strong>Afgerond</strong></div></div></div>
+    <div class="step ok" style="margin-top:10px" id="s361" onclick="toggleStep(this)"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Producten verplaatst + update in ticket?</div><div class="step-desc">Zet <strong>Actie administratief</strong> op <strong>Afgerond</strong></div></div></div>
     <div class="success">✅ Defect &amp; incourant correct gescheiden en volledig afgehandeld</div>
   </div>
 </div>
@@ -339,10 +420,14 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
     <h2>🚚 PostNL / DHL retour</h2>
     <p>Pakket teruggestuurd in dezelfde verzenddoos met PostNL-label. Gebruik altijd de pakbon als basis.</p>
   </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="tab-progress-label" id="lbl-postnl">0 stappen afgerond</div>
+  <button class="reset-btn" onclick="resetPage()">↺ Reset</button></div>
+  <div class="tab-progress"><div class="tab-progress-fill" id="prog-postnl"></div></div>
+
   <div class="phase">
     <div class="phase-title">Fase 1 — Ticket zoeken (altijd eerst!)</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ga naar Monday: After(Sales) – Retourverwerking – PostNL</div><div class="step-desc">Zoek op: leveringsnummer · winkelnaam · K-nummer · postcode · e-mail · T&amp;T</div></div></div>
+    <div class="steps" id="s103" onclick="toggleStep(this)">
+      <div class="step" id="s104" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ga naar Monday: After(Sales) – Retourverwerking – PostNL</div><div class="step-desc">Zoek op: leveringsnummer · winkelnaam · K-nummer · postcode · e-mail · T&amp;T</div></div></div>
       <div class="step warn"><div class="step-num">!</div><div class="step-body"><div class="step-title">Voorkom dubbele tickets! Controleer altijd vóór aanmaken.</div></div></div>
     </div>
     <div class="fork" style="margin-top:10px">
@@ -352,14 +437,14 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
   </div>
   <div class="phase">
     <div class="phase-title">Fase 2 — Registreren &amp; opslaan</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ticket staat onder "PostNL/DHL Onderzoeken"</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Update toevoegen + ticket bovenaan vastzetten</div><div class="step-desc">Noteer verklaring klant of <em>"Geen verklaring aanwezig"</em></div></div></div>
-      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">QR-label printen (Dymo) · plak op gele sticky note · test met iPad</div></div></div>
-      <div class="step ok"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Geregistreerd · locatie invullen in ticket</div></div></div>
+    <div class="steps" id="s113" onclick="toggleStep(this)">
+      <div class="step" id="s114" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ticket staat onder "PostNL/DHL Onderzoeken"</div></div></div>
+      <div class="step" id="s118" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Update toevoegen + ticket bovenaan vastzetten</div><div class="step-desc">Noteer verklaring klant of <em>"Geen verklaring aanwezig"</em></div></div></div>
+      <div class="step" id="s123" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">QR-label printen (Dymo) · plak op gele sticky note · test met iPad</div></div></div>
+      <div class="step ok" id="s127" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-Geregistreerd · locatie invullen in ticket</div></div></div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — PostNL retour ontvangen, nog controleren</span><button class="copy-btn" onclick="cp('p1',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — PostNL retour ontvangen, nog controleren</span><button class="copy-btn" onclick="cp('p1',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="p1">De retourzending van PostNL is ontvangen.
 Het pakket is geregistreerd, maar moet nog worden gecontroleerd.</div>
     </div>
@@ -368,25 +453,25 @@ Het pakket is geregistreerd, maar moet nog worden gecontroleerd.</div>
   <div class="sub-header">Vervolgacties</div>
   <div class="phase" style="margin-top:12px">
     <div class="phase-title">A — Opnieuw opsturen (op verzoek Sales)</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Scan QR → open ticket · verwijder locatie</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Print label: <em>"Opnieuw versturen – [naam]"</em> · afleveren bij leidinggevende magazijn</div></div></div>
-      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">T&amp;T ontvangen via Teams → toevoegen in ticket · Status → Afronden</div></div></div>
+    <div class="steps" id="s131" onclick="toggleStep(this)">
+      <div class="step" id="s132" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Scan QR → open ticket · verwijder locatie</div></div></div>
+      <div class="step" id="s136" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Print label: <em>"Opnieuw versturen – [naam]"</em> · afleveren bij leidinggevende magazijn</div></div></div>
+      <div class="step" id="s140" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">T&amp;T ontvangen via Teams → toevoegen in ticket · Status → Afronden</div></div></div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — wordt opnieuw verstuurd</span><button class="copy-btn" onclick="cp('p2',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — wordt opnieuw verstuurd</span><button class="copy-btn" onclick="cp('p2',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="p2">De levering wordt opnieuw verstuurd.
 De Track &amp; Trace volgt nog.</div>
     </div>
   </div>
   <div class="phase">
     <div class="phase-title">B — Inhoud controleren (compleet retour)</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Open doos · check inhoud met pakbon</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">QR-label maken en plakken op doos · doos → Kast-Retouraanvraag · locatie bijwerken</div></div></div>
+    <div class="steps" id="s144" onclick="toggleStep(this)">
+      <div class="step" id="s145" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Open doos · check inhoud met pakbon</div></div></div>
+      <div class="step" id="s149" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">QR-label maken en plakken op doos · doos → Kast-Retouraanvraag · locatie bijwerken</div></div></div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — retourzending gecontroleerd (PostNL)</span><button class="copy-btn" onclick="cp('p3',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — retourzending gecontroleerd (PostNL)</span><button class="copy-btn" onclick="cp('p3',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="p3">Retourzending is gecontroleerd.
 De inhoud is gecontroleerd en volledig bevonden.
 Verklaring PostNL:
@@ -397,7 +482,7 @@ Verklaring PostNL:
 ☐ Een duidelijke verklaring ontbreekt.</div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — afwijking geconstateerd</span><button class="copy-btn" onclick="cp('p4',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — afwijking geconstateerd</span><button class="copy-btn" onclick="cp('p4',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="p4">Retour is gecontroleerd – Afwijking geconstateerd.
 De retourzending is ontvangen, maar er zijn enkele afwijkingen geconstateerd (defect of incompleet):
 • 1x [SKU], [Artikelnaam] – Defect: [Reden van defect]
@@ -407,7 +492,7 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
 (foto van artikelen)</div>
     </div>
   </div>
-  <div class="step ok" style="margin-top:10px"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Producten verplaatst + update in ticket?</div><div class="step-desc">Zet <strong>Actie administratief</strong> op <strong>Afgerond</strong></div></div></div>
+  <div class="step ok" style="margin-top:10px" id="s362" onclick="toggleStep(this)"><div class="step-num">✓</div><div class="step-body"><div class="step-title">Producten verplaatst + update in ticket?</div><div class="step-desc">Zet <strong>Actie administratief</strong> op <strong>Afgerond</strong></div></div></div>
   <div class="success">✅ PostNL-retour geregistreerd en afgehandeld</div>
 </div>
 
@@ -417,19 +502,23 @@ De digitale lijst is te downloaden via het tabblad 'Bestanden'.
     <h2>⚙️ Powermatic</h2>
     <p>Reparatie via Plattner, leenapparaten en retour van gerepareerde apparaten.</p>
   </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="tab-progress-label" id="lbl-power">0 stappen afgerond</div>
+  <button class="reset-btn" onclick="resetPage()">↺ Reset</button></div>
+  <div class="tab-progress"><div class="tab-progress-fill" id="prog-power"></div></div>
+
   <div class="phase">
     <div class="phase-title">Fase 1 — Registratie &amp; in behandeling</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Check ticket (Jotform / Monday) · open bijbehorende ticket</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Update toevoegen — in het Engels!</div><div class="step-desc"><code>Customer name / company</code> · <code>Powermatic type – Seal: intact / broken</code> · <code>Serial number</code> · <code>Defect description</code></div></div></div>
+    <div class="steps" id="s157" onclick="toggleStep(this)">
+      <div class="step" id="s158" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Check ticket (Jotform / Monday) · open bijbehorende ticket</div></div></div>
+      <div class="step" id="s162" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Update toevoegen — in het Engels!</div><div class="step-desc"><code>Customer name / company</code> · <code>Powermatic type – Seal: intact / broken</code> · <code>Serial number</code> · <code>Defect description</code></div></div></div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — ontvangen, nog controleren</span><button class="copy-btn" onclick="cp('pm1',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — ontvangen, nog controleren</span><button class="copy-btn" onclick="cp('pm1',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="pm1">De retourzending is ontvangen. Het pakket is geregistreerd, maar moet nog worden gecontroleerd.
 Het pakket is geplaatst in het vak "Overig PM".</div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — subticket update (defect + reparatieinfo)</span><button class="copy-btn" onclick="cp('pm2',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — subticket update (defect + reparatieinfo)</span><button class="copy-btn" onclick="cp('pm2',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="pm2">Naam van de klant of het bedrijf:
 Powermatic - seal (intact/broken), Serienummer van het apparaat:
 
@@ -457,26 +546,26 @@ KPlattner heeft het volgende vervangen / gedaan:
   </div>
   <div class="phase">
     <div class="phase-title">Fase 2 — Labels aanmaken (3× printen!)</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Open Dymo → QR-preset · kopieer update-tekst → vervang link → print <strong>3 keer</strong></div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Labels bevestigen</div><div class="step-desc"><strong>Label 1 (alleen QR):</strong> naast serienummersticker <em>onder het apparaat</em> · <strong>Label 2:</strong> sticky note bovenop apparaat · <strong>Label 3:</strong> sticky note bovenop doos</div></div></div>
+    <div class="steps" id="s167" onclick="toggleStep(this)">
+      <div class="step" id="s168" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Open Dymo → QR-preset · kopieer update-tekst → vervang link → print <strong>3 keer</strong></div></div></div>
+      <div class="step" id="s172" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Labels bevestigen</div><div class="step-desc"><strong>Label 1 (alleen QR):</strong> naast serienummersticker <em>onder het apparaat</em> · <strong>Label 2:</strong> sticky note bovenop apparaat · <strong>Label 3:</strong> sticky note bovenop doos</div></div></div>
     </div>
   </div>
   <div class="phase">
     <div class="phase-title">Fase 3 — Opslag &amp; verzending naar Plattner</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Apparaat in Powermatic-stelling (vak verzending)</div></div></div>
+    <div class="steps" id="s177" onclick="toggleStep(this)">
+      <div class="step" id="s178" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Apparaat in Powermatic-stelling (vak verzending)</div></div></div>
       <div class="step warn"><div class="step-num">!</div><div class="step-body"><div class="step-title">Verzenddag = altijd vrijdag</div><div class="step-desc">Verpak samen in grote doos · let op maximumgewicht · verzendlabel(s) aanvragen bij magazijn</div></div></div>
-      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">T&amp;T via Teams → in alle bijbehorende tickets plakken</div></div></div>
+      <div class="step" id="s187" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">T&amp;T via Teams → in alle bijbehorende tickets plakken</div></div></div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — gecontroleerd, klaar voor Plattner</span><button class="copy-btn" onclick="cp('pm3',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — gecontroleerd, klaar voor Plattner</span><button class="copy-btn" onclick="cp('pm3',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="pm3">De Powermatic-apparaten zijn gecontroleerd op defecten en vervolgens correct administratief verwerkt.
 De apparaten bevinden zich momenteel in het vak "Plattner versturen" binnen de Powermatic-stelling en zijn gereed voor latere verzending.
 De status in de subtickets is aangepast naar "Nog niet opgestuurd".</div>
     </div>
     <div class="tmpl">
-      <div class="tmpl-bar"><span class="tmpl-label">📋 Template — opgestuurd naar Plattner</span><button class="copy-btn" onclick="cp('pm4',this)">Kopieer</button></div>
+      <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — opgestuurd naar Plattner</span><button class="copy-btn" onclick="cp('pm4',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
       <div class="tmpl-body" id="pm4">Alle Powermatic(s) in de onderstaande subtickets zijn ontvangen en opgestuurd ter reparatie.
 KP Plattner GmbH
 Steinbockkallee 9
@@ -489,19 +578,19 @@ De status subtickets is gewijzigd naar "Opgestuurd Plattner".</div>
   </div>
   <div class="divider"></div>
   <div class="sub-header">Plattner retour — gerepareerd apparaat terug</div>
-  <div class="steps" style="margin-top:10px">
-    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Pak uit vak "Plattner Retour" · scan QR · backup QR zit onder het apparaat</div></div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Serienummer controleren ↔ ticket</div></div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Update met reparatiebeschrijving · klantgegevens in SAP · adreslabel via Dymo op doos</div></div></div>
-    <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Groeperen per klant · verzendlabel aanvragen · T&amp;T via Teams → ticket</div></div></div>
+  <div class="steps" style="margin-top:10px" id="s363" onclick="toggleStep(this)">
+    <div class="step" id="s191" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Pak uit vak "Plattner Retour" · scan QR · backup QR zit onder het apparaat</div></div></div>
+    <div class="step" id="s195" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Serienummer controleren ↔ ticket</div></div></div>
+    <div class="step" id="s199" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">Update met reparatiebeschrijving · klantgegevens in SAP · adreslabel via Dymo op doos</div></div></div>
+    <div class="step" id="s203" onclick="toggleStep(this)"><div class="step-num">4</div><div class="step-body"><div class="step-title">Groeperen per klant · verzendlabel aanvragen · T&amp;T via Teams → ticket</div></div></div>
   </div>
   <div class="tmpl">
-    <div class="tmpl-bar"><span class="tmpl-label">📋 Template — retour van Plattner ontvangen</span><button class="copy-btn" onclick="cp('pm5',this)">Kopieer</button></div>
+    <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — retour van Plattner ontvangen</span><button class="copy-btn" onclick="cp('pm5',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
     <div class="tmpl-body" id="pm5">De apparaten zijn inmiddels retour gekomen na uitvoering van de reparatiewerkzaamheden door Plattner.
 Onderstaand in de subticket(s) treft u een overzicht van de uitgevoerde herstelwerkzaamheden.</div>
   </div>
   <div class="tmpl">
-    <div class="tmpl-bar"><span class="tmpl-label">📋 Template — opgestuurd naar klant</span><button class="copy-btn" onclick="cp('pm6',this)">Kopieer</button></div>
+    <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — opgestuurd naar klant</span><button class="copy-btn" onclick="cp('pm6',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
     <div class="tmpl-body" id="pm6">Alle Powermatic(s) in de onderstaande subtickets zijn ontvangen en opgestuurd naar de klant.
 - Shopnaam:
 - Adres:
@@ -513,25 +602,25 @@ De status subtickets is gewijzigd naar "Versturen klant".</div>
   <div class="success">✅ Powermatic klaar voor levering aan klant</div>
   <div class="divider"></div>
   <div class="sub-header">Leenapparaat — uitlenen <span style="font-size:12px;color:var(--text-faint);font-weight:400">(alleen op verzoek)</span></div>
-  <div class="steps" style="margin-top:10px">
-    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Pak leenapparaat uit leen-vak · scan QR → open leen-ticket · serienummer controleren</div></div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Klantgegevens toevoegen · link originele klantticket · status → Uitgeleend</div></div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Leenvoorwaarden in doos · verzendlabel via magazijn · T&amp;T in ticket</div></div></div>
+  <div class="steps" style="margin-top:10px" id="s364" onclick="toggleStep(this)">
+    <div class="step" id="s207" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Pak leenapparaat uit leen-vak · scan QR → open leen-ticket · serienummer controleren</div></div></div>
+    <div class="step" id="s211" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Klantgegevens toevoegen · link originele klantticket · status → Uitgeleend</div></div></div>
+    <div class="step" id="s215" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">Leenvoorwaarden in doos · verzendlabel via magazijn · T&amp;T in ticket</div></div></div>
   </div>
   <div class="tmpl">
-    <div class="tmpl-bar"><span class="tmpl-label">📋 Template — leenapparaat uitgeleend</span><button class="copy-btn" onclick="cp('pm7',this)">Kopieer</button></div>
+    <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — leenapparaat uitgeleend</span><button class="copy-btn" onclick="cp('pm7',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
     <div class="tmpl-body" id="pm7">Dit Powermatic-apparaat is uitgeleend aan de volgende klant.
 Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
   </div>
   <div class="divider"></div>
   <div class="sub-header">Leenapparaat — retour ontvangen</div>
-  <div class="steps" style="margin-top:10px">
-    <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Open doos · check inhoud via flap-inhoudslijst</div><div class="step-desc">Ontbreekt er iets? → noteer in ticket + <strong>€45,- kosten</strong> → klantorder aanmaken</div></div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Scan QR → leen-ticket · status → Beschikbaar · apparaat terug in leen-stelling</div></div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Reageer ook in originele klantticket: "Leenapparaat retour"</div></div></div>
+  <div class="steps" style="margin-top:10px" id="s365" onclick="toggleStep(this)">
+    <div class="step" id="s219" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Open doos · check inhoud via flap-inhoudslijst</div><div class="step-desc">Ontbreekt er iets? → noteer in ticket + <strong>€45,- kosten</strong> → klantorder aanmaken</div></div></div>
+    <div class="step" id="s224" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Scan QR → leen-ticket · status → Beschikbaar · apparaat terug in leen-stelling</div></div></div>
+    <div class="step" id="s228" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">Reageer ook in originele klantticket: "Leenapparaat retour"</div></div></div>
   </div>
   <div class="tmpl">
-    <div class="tmpl-bar"><span class="tmpl-label">📋 Template — leenapparaat retour ontvangen</span><button class="copy-btn" onclick="cp('pm8',this)">Kopieer</button></div>
+    <div class="tmpl-bar" onclick="toggleTmpl(this.parentElement)"><span class="tmpl-label">📋 Template — leenapparaat retour ontvangen</span><button class="copy-btn" onclick="cp('pm8',this)">Kopieer</button><span class="tmpl-toggle">▼</span></div>
     <div class="tmpl-body" id="pm8">De uitgeleende Powermatic is retour ontvangen en is inmiddels weer correct geregistreerd in de leenvoorraad, zodat deze opnieuw beschikbaar is voor uitleen.</div>
   </div>
 </div>
@@ -542,17 +631,21 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
     <h2>🔥 Aanstekers (Ronson / Xikar / Zippo)</h2>
     <p>Drie merkflows met elk een eigen garantie- en serviceproces. Voer altijd eerst de snelle check uit.</p>
   </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="tab-progress-label" id="lbl-lighter">0 stappen afgerond</div>
+  <button class="reset-btn" onclick="resetPage()">↺ Reset</button></div>
+  <div class="tab-progress"><div class="tab-progress-fill" id="prog-lighter"></div></div>
+
   <div class="phase">
     <div class="phase-title">Fase 1 — Registratie</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Controleer Jotform + Monday-ticket · geen ticket? → aanmaken · Type = Aanstekers · kies merk</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">QR-label aanmaken en plakken op doos/zakje</div></div></div>
+    <div class="steps" id="s232" onclick="toggleStep(this)">
+      <div class="step" id="s233" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Controleer Jotform + Monday-ticket · geen ticket? → aanmaken · Type = Aanstekers · kies merk</div></div></div>
+      <div class="step" id="s237" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">QR-label aanmaken en plakken op doos/zakje</div></div></div>
     </div>
   </div>
   <div class="phase">
     <div class="phase-title">Fase 2 — Snelle check (altijd eerst!)</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Check brandstof · vul bij · wacht 1 minuut · vlamhoogte afstellen · brandgat reinigen · opnieuw testen</div></div></div>
+    <div class="steps" id="s241" onclick="toggleStep(this)">
+      <div class="step" id="s242" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Check brandstof · vul bij · wacht 1 minuut · vlamhoogte afstellen · brandgat reinigen · opnieuw testen</div></div></div>
     </div>
     <div class="fork" style="margin-top:10px">
       <div class="fork-card"><div class="fork-label badge-teal">Werkt nu ✓</div><div class="fork-body">Update: <em>"Getest, werkt na basischeck"</em> → Actie administratief → Afgerond</div></div>
@@ -572,7 +665,7 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
       </div>
       <div class="fork-card">
         <div class="fork-label badge-coral">Ronson — betaalde service</div>
-        <div class="fork-body" style="margin-top:8px"><strong>Kostenindicatie:</strong><br>Recent (&lt;4 jr): €15,-<br>Klassiek: €35–€75,-<br>Vóór 1970: €45–€85,-<br>Verzending recent: €3,03<br>Verzending klassiek: €15,20<br>Niet te repareren: €9,50<br>Garantie onderdelen: 6 mnd<br><br>Mail prijsopgave → akkoord → naar Delft → terug → factuur → na betaling verzenden</div>
+        <div class="fork-body" style="margin-top:8px"><strong>Kostenindicatie:</strong><br>Recent (&lt;4 jr): €15,-<br>Klassiek: €35–€75,-<br>Vóór 1970: €45–€85,-<br>Garantie onderdelen: 6 mnd<br><br>Mail prijsopgave → akkoord → naar Delft → terug → factuur → na betaling verzenden</div>
       </div>
     </div>
     <div class="success">✅ Aansteker afgehandeld via juiste merkflow</div>
@@ -585,24 +678,28 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
     <h2>🏪 Winkel Slimroken</h2>
     <p>Klanten melden defecten of willen een product omruilen.</p>
   </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="tab-progress-label" id="lbl-winkel">0 stappen afgerond</div>
+  <button class="reset-btn" onclick="resetPage()">↺ Reset</button></div>
+  <div class="tab-progress"><div class="tab-progress-fill" id="prog-winkel"></div></div>
+
   <div class="phase">
     <div class="phase-title">Defect retour in de winkel</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Controle van het defect</div><div class="step-desc">Klant geeft oorzaak aan · beoordeel of opgegeven defect overeenkomt met geconstateerde toestand</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Controleer garantiebewijs</div><div class="step-desc">Garantiekaartje · aankoopdatum · valt het binnen de garantieperiode?</div></div></div>
-      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Omruilen</div><div class="step-desc">Binnen garantie → 1-op-1 omruilen · model niet beschikbaar? → gelijkwaardig model meegeven</div></div></div>
-      <div class="step"><div class="step-num">4</div><div class="step-body"><div class="step-title">Registreer in defectenlijst van de winkel</div></div></div>
-      <div class="step ok"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Defect apparaat → incourante kast (1× per week geleegd)</div></div></div>
+    <div class="steps" id="s246" onclick="toggleStep(this)">
+      <div class="step" id="s247" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Controle van het defect</div><div class="step-desc">Klant geeft oorzaak aan · beoordeel of opgegeven defect overeenkomt met geconstateerde toestand</div></div></div>
+      <div class="step" id="s252" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Controleer garantiebewijs</div><div class="step-desc">Garantiekaartje · aankoopdatum · valt het binnen de garantieperiode?</div></div></div>
+      <div class="step" id="s257" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">Omruilen</div><div class="step-desc">Binnen garantie → 1-op-1 omruilen · model niet beschikbaar? → gelijkwaardig model meegeven</div></div></div>
+      <div class="step" id="s262" onclick="toggleStep(this)"><div class="step-num">4</div><div class="step-body"><div class="step-title">Registreer in defectenlijst van de winkel</div></div></div>
+      <div class="step ok" id="s266" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Defect apparaat → incourante kast (1× per week geleegd)</div></div></div>
     </div>
   </div>
   <div class="divider"></div>
   <div class="phase">
     <div class="phase-title">Omruiling in de winkel</div>
     <div class="step crit" style="margin-bottom:10px"><div class="step-num">!</div><div class="step-body"><div class="step-title">Omruiling alleen mogelijk als verpakking volledig ongeopend en onbeschadigd is.</div></div></div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ongeopend en onbeschadigd? → omruiling mag · Geopend/beschadigd? → niet mogelijk</div></div></div>
-      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Registreer in winkellijst onder categorie "Omruiling" · noteer product + reden</div></div></div>
-      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Geef vervangend product mee · geretourneerd product in doos "Omruiling winkel"</div></div></div>
+    <div class="steps" id="s273" onclick="toggleStep(this)">
+      <div class="step" id="s274" onclick="toggleStep(this)"><div class="step-num">1</div><div class="step-body"><div class="step-title">Ongeopend en onbeschadigd? → omruiling mag · Geopend/beschadigd? → niet mogelijk</div></div></div>
+      <div class="step" id="s278" onclick="toggleStep(this)"><div class="step-num">2</div><div class="step-body"><div class="step-title">Registreer in winkellijst onder categorie "Omruiling" · noteer product + reden</div></div></div>
+      <div class="step" id="s282" onclick="toggleStep(this)"><div class="step-num">3</div><div class="step-body"><div class="step-title">Geef vervangend product mee · geretourneerd product in doos "Omruiling winkel"</div></div></div>
       <div class="step warn"><div class="step-num">!</div><div class="step-body"><div class="step-title">Elke vrijdag: verwerkingslijst uploaden naar Monday</div><div class="step-desc">Daarna doos naar magazijnafdeling</div></div></div>
     </div>
     <div class="success">✅ Omruiling correct verwerkt en geregistreerd</div>
@@ -615,6 +712,10 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
     <h2>💻 SAP Retouraanvraag</h2>
     <p>Stappen 30–41 voor het aanmaken van de retouraanvraag in SAP en de Finance-aanvraag.</p>
   </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div class="tab-progress-label" id="lbl-sap">0 stappen afgerond</div>
+  <button class="reset-btn" onclick="resetPage()">↺ Reset</button></div>
+  <div class="tab-progress"><div class="tab-progress-fill" id="prog-sap"></div></div>
+
   <div class="phase">
     <div class="phase-title">Stap 30 — SAP openen</div>
     <div class="info-box">
@@ -631,29 +732,29 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
   </div>
   <div class="phase">
     <div class="phase-title">Stap 31–33 — Gegevens invullen</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">31</div><div class="step-body"><div class="step-title">Vul K-nummer in · controleer klantgegevens</div></div></div>
-      <div class="step"><div class="step-num">32</div><div class="step-body"><div class="step-title">Voeg artikelen + aantallen toe</div><div class="step-desc">Gebruik de aantallen uit de retourlijsten in Monday → tabblad <strong>Bestanden</strong></div></div></div>
-      <div class="step"><div class="step-num">33</div><div class="step-body"><div class="step-title">Match prijs via orderreferentie</div><div class="step-desc">Drag &amp; Relate → Klantorderdetails · neem prijs/korting over uit oorspronkelijke order<br><br><strong>Defecte producten:</strong> referentieorder vóór aankoopdatum particulier, max 6 maanden eerder.<br>Voorbeeld: aankoop 15-06-2025 → geldige ref: 15-12-2024 t/m 15-06-2025</div></div></div>
+    <div class="steps" id="s295" onclick="toggleStep(this)">
+      <div class="step" id="s296" onclick="toggleStep(this)"><div class="step-num">31</div><div class="step-body"><div class="step-title">Vul K-nummer in · controleer klantgegevens</div></div></div>
+      <div class="step" id="s300" onclick="toggleStep(this)"><div class="step-num">32</div><div class="step-body"><div class="step-title">Voeg artikelen + aantallen toe</div><div class="step-desc">Gebruik de aantallen uit de retourlijsten in Monday → tabblad <strong>Bestanden</strong></div></div></div>
+      <div class="step" id="s305" onclick="toggleStep(this)"><div class="step-num">33</div><div class="step-body"><div class="step-title">Match prijs via orderreferentie</div><div class="step-desc">Drag &amp; Relate → Klantorderdetails · neem prijs/korting over uit oorspronkelijke order<br><br><strong>Defecte producten:</strong> referentieorder vóór aankoopdatum particulier, max 6 maanden eerder.<br>Voorbeeld: aankoop 15-06-2025 → geldige ref: 15-12-2024 t/m 15-06-2025</div></div></div>
     </div>
   </div>
   <div class="phase">
     <div class="phase-title">Stap 34–37 — Projectcode, magazijn &amp; overige velden</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">34</div><div class="step-body"><div class="step-title">Kies projectcode</div><div class="step-desc"><span class="tag">RMA-Defect</span> <span class="tag">RMA-Incourant</span> · courant = geen projectcode</div></div></div>
-      <div class="step"><div class="step-num">35</div><div class="step-body"><div class="step-title">Controleer belastingcode (Belgische aanvragen)</div><div class="step-desc">Staat er <code>21V</code>? → wijzig naar <code>V21</code></div></div></div>
-      <div class="step"><div class="step-num">36</div><div class="step-body"><div class="step-title">Controleer magazijn</div><div class="step-desc"><strong>UEGH → 02</strong> · ATH / UEGB → 01</div></div></div>
-      <div class="step"><div class="step-num">37</div><div class="step-body"><div class="step-title">Vul Shop ID, owner en opmerkingen in</div><div class="step-desc">Zijbalk niet zichtbaar? → View → Door gebruiker gedefinieerde velden</div></div></div>
+    <div class="steps" id="s310" onclick="toggleStep(this)">
+      <div class="step" id="s311" onclick="toggleStep(this)"><div class="step-num">34</div><div class="step-body"><div class="step-title">Kies projectcode</div><div class="step-desc"><span class="tag">RMA-Defect</span> <span class="tag">RMA-Incourant</span> · courant = geen projectcode</div></div></div>
+      <div class="step" id="s316" onclick="toggleStep(this)"><div class="step-num">35</div><div class="step-body"><div class="step-title">Controleer belastingcode (Belgische aanvragen)</div><div class="step-desc">Staat er <code>21V</code>? → wijzig naar <code>V21</code></div></div></div>
+      <div class="step" id="s321" onclick="toggleStep(this)"><div class="step-num">36</div><div class="step-body"><div class="step-title">Controleer magazijn</div><div class="step-desc"><strong>UEGH → 02</strong> · ATH / UEGB → 01</div></div></div>
+      <div class="step" id="s326" onclick="toggleStep(this)"><div class="step-num">37</div><div class="step-body"><div class="step-title">Vul Shop ID, owner en opmerkingen in</div><div class="step-desc">Zijbalk niet zichtbaar? → View → Door gebruiker gedefinieerde velden</div></div></div>
       <div class="step warn"><div class="step-num">!</div><div class="step-body"><div class="step-title">Restockkosten (stap 37A)</div><div class="step-desc"><strong>Klantfout</strong> → 12,5% bij veld "Korting" · <strong>UEG-fout</strong> → geen restockkosten</div></div></div>
     </div>
   </div>
   <div class="phase">
     <div class="phase-title">Stap 38–41 — Afronden &amp; Finance</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">38</div><div class="step-body"><div class="step-title">Klik Actualiseren · kopieer RA-nummer</div></div></div>
-      <div class="step"><div class="step-num">39</div><div class="step-body"><div class="step-title">Plak RA-nummer in de Monday-ticket</div></div></div>
-      <div class="step"><div class="step-num">40</div><div class="step-body"><div class="step-title">Vraag Finance aan</div><div class="step-desc"><span class="tag">Credit + Voorraad</span> courant · <span class="tag">Credit + Zonder Voorraad</span> defect · <span class="tag">Credit Incourant</span> incourant</div></div></div>
-      <div class="step ok"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-1 / Kast-2 / Kast-3 · wachten op Finance</div></div></div>
+    <div class="steps" id="s336" onclick="toggleStep(this)">
+      <div class="step" id="s337" onclick="toggleStep(this)"><div class="step-num">38</div><div class="step-body"><div class="step-title">Klik Actualiseren · kopieer RA-nummer</div></div></div>
+      <div class="step" id="s341" onclick="toggleStep(this)"><div class="step-num">39</div><div class="step-body"><div class="step-title">Plak RA-nummer in de Monday-ticket</div></div></div>
+      <div class="step" id="s345" onclick="toggleStep(this)"><div class="step-num">40</div><div class="step-body"><div class="step-title">Vraag Finance aan</div><div class="step-desc"><span class="tag">Credit + Voorraad</span> courant · <span class="tag">Credit + Zonder Voorraad</span> defect · <span class="tag">Credit Incourant</span> incourant</div></div></div>
+      <div class="step ok" id="s350" onclick="toggleStep(this)"><div class="step-num">📍</div><div class="step-body"><div class="step-title">Doos → Kast-1 / Kast-2 / Kast-3 · wachten op Finance</div></div></div>
     </div>
     <div class="success">✅ Retouraanvraag aangemaakt en Finance aangevraagd</div>
   </div>
@@ -661,9 +762,129 @@ Klantgegevens: Zie de bijbehorende Monday-ticket: [link]</div>
 
 </div>
 <script>
-function show(id,btn){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));document.getElementById('p-'+id).classList.add('active');btn.classList.add('active');window.scrollTo({top:0,behavior:'smooth'})}
-function cp(id,btn){const t=document.getElementById(id).innerText;navigator.clipboard.writeText(t).then(()=>{btn.textContent='Gekopieerd ✓';btn.classList.add('copied');setTimeout(()=>{btn.textContent='Kopieer';btn.classList.remove('copied')},2000)})}
+// ===== STEP CHECKING =====
+function toggleStep(el){
+  el.classList.toggle('checked');
+  // Update progress for current page
+  updateProgress();
+}
+
+// ===== PROGRESS =====
+function updateProgress(){
+  const page = document.querySelector('.page.active');
+  if(!page) return;
+  const pid = page.id.replace('p-','');
+  const steps = page.querySelectorAll('.step[onclick]');
+  const checked = page.querySelectorAll('.step.checked');
+  const total = steps.length;
+  const done = checked.length;
+  const pct = total ? (done/total*100) : 0;
+
+  const fill = document.getElementById('prog-'+pid);
+  const lbl = document.getElementById('lbl-'+pid);
+  if(fill) fill.style.width = pct + '%';
+  if(lbl){
+    if(done === total && total > 0){
+      lbl.textContent = '🎉 Alle stappen afgerond!';
+      lbl.classList.add('done');
+      if(done > 0) launchConfetti();
+    } else {
+      lbl.textContent = done + ' van ' + total + ' stappen afgerond';
+      lbl.classList.remove('done');
+    }
+  }
+
+  // Update nav badge
+  const btn = document.querySelector('.nav-btn.active .badge-count');
+  if(btn) btn.textContent = done + '/' + total;
+}
+
+// ===== CONFETTI =====
+function launchConfetti(){
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const pieces = [];
+  const colors = ['#0f7057','#1a56a0','#8a5c00','#4a3a9e','#8a3820','#1d9e75'];
+  for(let i=0;i<120;i++){
+    pieces.push({
+      x: Math.random()*canvas.width,
+      y: Math.random()*canvas.height - canvas.height,
+      w: Math.random()*10+4,
+      h: Math.random()*6+3,
+      color: colors[Math.floor(Math.random()*colors.length)],
+      rot: Math.random()*360,
+      vx: (Math.random()-0.5)*3,
+      vy: Math.random()*4+2,
+      vr: (Math.random()-0.5)*6,
+      alpha: 1
+    });
+  }
+  let frame = 0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      p.alpha = Math.max(0, 1 - frame/80);
+      ctx.save();
+      ctx.globalAlpha = p.alpha;
+      ctx.translate(p.x+p.w/2, p.y+p.h/2);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    frame++;
+    if(frame < 90) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  draw();
+}
+
+// ===== TEMPLATE TOGGLE =====
+function toggleTmpl(el){
+  el.classList.toggle('expanded');
+}
+
+// ===== RESET =====
+function resetPage(){
+  const page = document.querySelector('.page.active');
+  page.querySelectorAll('.step.checked').forEach(s=>s.classList.remove('checked'));
+  updateProgress();
+}
+
+// ===== TAB SWITCH =====
+function show(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const page = document.getElementById('p-'+id);
+  page.classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateProgress();
+}
+
+// ===== COPY =====
+function cp(id,btn){
+  const t=document.getElementById(id).innerText;
+  navigator.clipboard.writeText(t).then(()=>{
+    btn.textContent='Gekopieerd ✓';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='Kopieer';btn.classList.remove('copied')},2000);
+  });
+}
+
+// Init
+document.addEventListener('DOMContentLoaded', () => {
+  updateProgress();
+  // Make all templates collapsed by default - expand on click
+  document.querySelectorAll('.tmpl').forEach(t=>{
+    const bar = t.querySelector('.tmpl-bar');
+    if(bar && !bar.getAttribute('onclick')){
+      bar.setAttribute('onclick','toggleTmpl(this.parentElement)');
+    }
+  });
+});
 </script>
 </body>
 </html>
-
