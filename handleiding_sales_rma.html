@@ -21,10 +21,10 @@
 body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.7}
 
 /* ── STICKY NAV ── */
-.topnav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.04)}
+.topnav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 12px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.04)}
 .topnav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none}
 .topnav-inner::-webkit-scrollbar{display:none}
-.topnav a{padding:12px 10px;font-size:11.5px;font-weight:500;color:var(--text-muted);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s}
+.topnav a{padding:10px 7px;font-size:11px;font-weight:500;color:var(--text-muted);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;letter-spacing:-.1px}
 .topnav a:hover{color:var(--text)}
 .topnav a.active{color:var(--accent);border-bottom-color:var(--accent)}
 
@@ -182,9 +182,9 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15
     <a href="#retourtypen">Retourtypen</a>
     <a href="#registreren">Registreren</a>
     <a href="#qrlabel">QR-label</a>
-    <a href="#behandeling">In behandeling</a>
+    <a href="#behandeling">Behandeling</a>
     <a href="#scheiding">Scheiding</a>
-    <a href="#retouraanvraag">Retouraanvraag SAP</a>
+    <a href="#retouraanvraag">SAP</a>
     <a href="#afronden">Afronden</a>
     <a href="#powermatic">Powermatic</a>
     <a href="#aanstekers">Aanstekers</a>
@@ -194,7 +194,6 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15
 
 <div class="hero">
   <div class="hero-inner">
-    <div class="hero-badge">Handleiding voor nieuwe medewerkers</div>
     <h1>Sales / RMA<br>Retourverwerking</h1>
     <p>Welkom bij de (After)Sales afdeling. In deze handleiding leer je stap voor stap hoe retourzendingen, retouraanvragen en creditnota's worden verwerkt — inclusief de achtergrond en het waarom.</p>
     <div class="hero-links">
@@ -293,7 +292,7 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15
     <div class="mock-body">
       <div class="monday-header"><span style="flex:2">Ticket naam</span><span style="flex:1">Status</span><span style="flex:1">Locatie</span></div>
       <div class="monday-row"><span class="mr-name">UEGH – K12345 – DE SHOP NAAM</span><span class="mr-badge mr-binnen">Zending binnen</span><span style="color:var(--text-faint);font-size:11px">Kast-Geregistreerd</span></div>
-      <div class="monday-row"><span class="mr-name">ATH – K67890 – WINKEL NAAM</span><span class="mr-badge mr-behandeling">In behandeling</span><span style="color:var(--text-faint);font-size:11px">Tommy – Kantoor</span></div>
+      <div class="monday-row"><span class="mr-name">ATH – K67890 – WINKEL NAAM</span><span class="mr-badge mr-behandeling">Behandeling</span><span style="color:var(--text-faint);font-size:11px">Tommy – Kantoor</span></div>
       <div class="monday-row"><span class="mr-name">UEGH – K11111 – SHOP NAAM</span><span class="mr-badge mr-ra">Retouraanvraag</span><span style="color:var(--text-faint);font-size:11px">Kast-Retouraanvraag</span></div>
       <div class="monday-row"><span class="mr-name">UEGB – K22222 – BELG SHOP</span><span class="mr-badge mr-wachten">Wachten Finance</span><span style="color:var(--text-faint);font-size:11px">Kast-2</span></div>
     </div>
