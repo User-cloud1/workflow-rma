@@ -21,12 +21,18 @@
 body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.7}
 
 /* ── STICKY NAV ── */
-.topnav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 12px;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.04)}
-.topnav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth}
+.topnav{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 20px 0;position:sticky;top:0;z-index:100;box-shadow:0 1px 8px rgba(0,0,0,.04)}
+.topnav-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none;scroll-behavior:smooth;padding-bottom:12px}
 .topnav-inner::-webkit-scrollbar{display:none}
-.topnav a{padding:10px 7px;font-size:11px;font-weight:500;color:var(--text-muted);text-decoration:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .15s;letter-spacing:-.1px}
-.topnav a:hover{color:var(--text)}
-.topnav a.active{color:var(--accent);border-bottom-color:var(--accent)}
+.dot-item{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;flex-shrink:0;text-decoration:none}
+.dot{width:28px;height:28px;border-radius:50%;background:var(--bg);border:1.5px solid var(--border-strong);display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;color:var(--text-muted);transition:all .2s;font-family:var(--mono)}
+.dot:hover{border-color:var(--accent);color:var(--accent)}
+.dot.dot-active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.dot.dot-done{background:var(--accent-light);color:var(--accent);border-color:var(--accent-border)}
+.dot-label{font-size:10px;color:var(--text-muted);white-space:nowrap;transition:color .2s}
+.dot-item.dot-active-item .dot-label{color:var(--accent);font-weight:600}
+.dot-connector{width:16px;height:1.5px;background:var(--border-strong);flex-shrink:0;margin-bottom:16px;transition:background .2s}
+.dot-connector.dot-conn-done{background:var(--accent-border)}
 
 /* ── HERO ── */
 .hero{background:var(--accent);color:#fff;padding:52px 40px 48px;text-align:center}
@@ -176,19 +182,66 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15
 <body>
 
 <div class="topnav">
-  <div class="topnav-inner">
-    <a href="#intro" class="active">Introductie</a>
-    <a href="#systemen">Systemen</a>
-    <a href="#retourtypen">Retourtypen</a>
-    <a href="#registreren">Registreren</a>
-    <a href="#qrlabel">QR-label</a>
-    <a href="#behandeling">Behandeling</a>
-    <a href="#scheiding">Scheiding</a>
-    <a href="#retouraanvraag">SAP</a>
-    <a href="#afronden">Afronden</a>
-    <a href="#powermatic">Powermatic</a>
-    <a href="#aanstekers">Aanstekers</a>
-    <a href="#winkel">Winkel</a>
+  <div class="topnav-inner" id="dots-nav">
+    <a class="dot-item dot-active-item" href="#intro" data-section="intro">
+      <div class="dot dot-active">1</div>
+      <span class="dot-label">Introductie</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#systemen" data-section="systemen">
+      <div class="dot">2</div>
+      <span class="dot-label">Systemen</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#retourtypen" data-section="retourtypen">
+      <div class="dot">3</div>
+      <span class="dot-label">Retourtypen</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#registreren" data-section="registreren">
+      <div class="dot">4</div>
+      <span class="dot-label">Registreren</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#qrlabel" data-section="qrlabel">
+      <div class="dot">5</div>
+      <span class="dot-label">QR-label</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#behandeling" data-section="behandeling">
+      <div class="dot">6</div>
+      <span class="dot-label">Behandeling</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#scheiding" data-section="scheiding">
+      <div class="dot">7</div>
+      <span class="dot-label">Scheiding</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#retouraanvraag" data-section="retouraanvraag">
+      <div class="dot">8</div>
+      <span class="dot-label">SAP</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#afronden" data-section="afronden">
+      <div class="dot">9</div>
+      <span class="dot-label">Afronden</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#powermatic" data-section="powermatic">
+      <div class="dot">10</div>
+      <span class="dot-label">Powermatic</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#aanstekers" data-section="aanstekers">
+      <div class="dot">11</div>
+      <span class="dot-label">Aanstekers</span>
+    </a>
+    <div class="dot-connector"></div>
+    <a class="dot-item" href="#winkel" data-section="winkel">
+      <div class="dot">12</div>
+      <span class="dot-label">Winkel</span>
+    </a>
   </div>
 </div>
 
@@ -924,30 +977,39 @@ body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15
 </div><!-- end main -->
 
 <script>
-// Active nav highlight + auto-scroll nav on page scroll
+// Dots nav — highlight + done states + auto-scroll
 const sections = document.querySelectorAll('.section');
-const navLinks = document.querySelectorAll('.topnav a');
-const navInner = document.querySelector('.topnav-inner');
+const dotItems = document.querySelectorAll('.dot-item');
+const dotConnectors = document.querySelectorAll('.dot-connector');
+const navInner = document.getElementById('dots-nav');
+const sectionIds = Array.from(sections).map(s => s.id);
 
-window.addEventListener('scroll', () => {
-  let current = '';
-  sections.forEach(s => {
-    if(window.scrollY >= s.offsetTop - 80) current = s.id;
-  });
-  navLinks.forEach(a => {
-    const isActive = a.getAttribute('href') === '#' + current;
-    a.classList.toggle('active', isActive);
-    // Scroll nav so active link is visible in center
+function updateDots(currentId) {
+  const currentIdx = sectionIds.indexOf(currentId);
+  dotItems.forEach((item, i) => {
+    const dot = item.querySelector('.dot');
+    const isActive = i === currentIdx;
+    const isDone = i < currentIdx;
+    dot.className = 'dot' + (isActive ? ' dot-active' : isDone ? ' dot-done' : '');
+    dot.textContent = isDone ? '✓' : (i + 1);
+    item.classList.toggle('dot-active-item', isActive);
+    if(dotConnectors[i]) dotConnectors[i].classList.toggle('dot-conn-done', isDone);
+    // Auto-scroll nav to keep active dot centered
     if(isActive){
-      const linkLeft = a.offsetLeft;
-      const linkWidth = a.offsetWidth;
-      const navWidth = navInner.offsetWidth;
       navInner.scrollTo({
-        left: linkLeft - navWidth / 2 + linkWidth / 2,
+        left: item.offsetLeft - navInner.offsetWidth / 2 + item.offsetWidth / 2,
         behavior: 'smooth'
       });
     }
   });
+}
+
+window.addEventListener('scroll', () => {
+  let current = sectionIds[0];
+  sections.forEach(s => {
+    if(window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  updateDots(current);
 });
 </script>
 </body>
